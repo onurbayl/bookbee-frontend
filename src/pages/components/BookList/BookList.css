@@ -1,0 +1,14 @@
+.book-list {
+  padding: 15px;
+}
+
+.book-list h2 {
+  font-size: 18px;
+  color: #252525;
+  padding: 10px 0px;
+}
+
+.books-container {
+  display: flex;
+  gap: 15px;
+}
