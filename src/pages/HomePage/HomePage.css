@@ -1,0 +1,10 @@
+.main-container {
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.booklist {
+  margin-left: auto;
+  margin-right: auto;
+}
