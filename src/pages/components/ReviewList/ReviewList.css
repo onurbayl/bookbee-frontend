@@ -1,0 +1,15 @@
+.review-list {
+  padding: 15px;
+}
+
+.review-list h2 {
+  font-size: 18px;
+  color: #252525;
+  margin-bottom: 10px;
+}
+
+.reviews-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
