@@ -1,0 +1,33 @@
+.rating {
+    display: inline-flex;
+    font-size: 24px;
+    line-height: 1;
+  }
+  
+  .rating-star {
+    position: relative;
+    color: #DDD;
+  }
+  
+  .rating-star.full {
+    color: #FFC92D;
+  }
+  
+  .rating-star.empty {
+    color: #DDD;
+  }
+  
+  .rating-star.half {
+    color: #DDD;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .rating-star.half .rating-star-overlay {
+    color: #FFC92D;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    overflow: hidden;
+  }

@@ -7,13 +7,13 @@ const Header = () => {
     <header className="header">
       <Link to={"/"}>
         <div className="logo">
-          <img src="logo.png" alt="BookBee Logo" />
+          <img src={`${process.env.PUBLIC_URL}/logo.png`} alt="BookBee Logo" />
         </div>
       </Link>
       <div className="search-bar">
         <input type="text" placeholder="Search BookBee" />
         <button className="search-btn">
-          <img src="search.png" alt="Search" />
+          <img src={`${process.env.PUBLIC_URL}/search.png`} alt="Search" />
         </button>
       </div>
       <div className="auth-buttons">
