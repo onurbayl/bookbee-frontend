@@ -1,8 +1,31 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
+import { auth } from "../../components/firebase/firebase.js";
+import { useAuth } from '../../../AuthContext.js';
 
 const Header = () => {
+
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate()
+        
+  async function handleLogout() {
+      try {
+          localStorage.removeItem("user");
+          await auth.signOut();
+          //window.location.href = "/login";
+          navigate("/login");
+          console.log("User logged out successfully!");
+      } catch (error) {
+          console.error("Error logging out:", error.message);
+      } finally {
+        setUser(null)
+      }
+  }
+
+
+
+
   return (
     <header className="header">
       <Link to={"/"}>
@@ -17,8 +40,15 @@ const Header = () => {
         </button>
       </div>
       <div className="auth-buttons">
-        <button className="login-btn">Login</button>
-        <button className="signup-btn">Sign Up</button>
+        <Link to="/admin"><button className="login-btn">Admin</button></Link>
+        {!user ? 
+          ( <>
+              <Link to="/login"><button className="login-btn">Login</button></Link>
+              <Link to="/register"><button className="signup-btn">Sign Up</button></Link>
+            </>
+          ) : (
+            <button className="signup-btn" onClick={handleLogout}>Logout</button>
+        )}
       </div>
     </header>
   );
