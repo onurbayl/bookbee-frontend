@@ -103,43 +103,43 @@
   color: #555;
 }
 
-.reviews-section {
+.book-reviews-section {
   padding: 10px;
 }
 
-.reviews-section h2 {
+.book-reviews-section h2 {
   margin-bottom: 5px;
 }
 
-.reviews-line {
+.book-reviews-line {
   height: 5px;
   background: #CAB295;
 }
 
-.review-data {
+.book-review-data {
   display: flex;
   justify-content: space-between;
 }
 
-.review-first {
+.book-review-first {
   display: flex;
   flex-direction: column;
   margin: 10px;
 }
 
-.review-first h4 {
+.book-review-first h4 {
   margin-bottom: 0;
   width: 150px
 }
 
-.review-second {
+.book-review-second {
   margin: 20px;
   margin-right: auto;
   align-self: center;
   color: #555;
 }
 
-.review-third {
+.book-review-third {
   display: flex;
   flex-direction: column;
   margin: 20px;
@@ -147,7 +147,7 @@
   padding-right: 20px;
 }
 
-.review-like {
+.book-review-like {
   width: 50px;
   display: flex;
   margin-top: 0;
@@ -156,7 +156,7 @@
   align-items: center;
 }
 
-.review-dislike {
+.book-review-dislike {
   display: flex;
   margin-top: 3px;
   margin-bottom: 3px;
@@ -169,7 +169,7 @@
   color: #A1805C;
 }
 
-.review-comment {
+.book-review-comment {
   display: flex;
   margin: 0;
   cursor: pointer;
@@ -228,12 +228,12 @@
   align-items: center;
 }
 
-.add-review-form {
+.add-book-review-form {
   display: flex;
   margin-top: 20px;
 }
 
-.add-review-first {
+.add-book-review-first {
   display: flex;
   margin: 10px;
 }
@@ -272,14 +272,14 @@
   overflow: hidden;
 }
 
-.add-review-second {
+.add-book-review-second {
   display: flex;
   margin-left: 20px;
   margin-right: 20px;
   width: 100%;
 }
 
-.add-review-second textarea {
+.add-book-review-second textarea {
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -289,18 +289,18 @@
   flex-grow: 1;
 }
 
-.add-review-second textarea::placeholder {
+.add-book-review-second textarea::placeholder {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-style: italic;
   color: #555;
 }
 
-.add-review-third {
+.add-book-review-third {
   display: flex;
   margin: 10px;
 }
 
-.add-review-third button {
+.add-book-review-third button {
   text-align: center;
   border: 1px solid #767676;
   border-radius: 12px;
@@ -312,7 +312,7 @@
   margin: auto;
 }
 
-.add-review-third button:hover {
+.add-book-review-third button:hover {
   background-color: #B99971;
 }
 

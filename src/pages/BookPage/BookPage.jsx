@@ -330,31 +330,31 @@ const BookPage = () => {
         <div className="book-description">
           <p>{book.description}</p>
         </div>
-        <div className="reviews-section">
+        <div className="book-reviews-section">
           <h2>Reviews</h2>
-          <div className="reviews-line"></div>
+          <div className="book-reviews-line"></div>
           {reviews.reviews.map((review, index) => (
             <div key={index} className="review">
-              <div className="review-data">
-                <div className="review-first">
+              <div className="book-review-data">
+                <div className="book-review-first">
                   <h4>{review.username}</h4>
                   <Rating score={review.score} />
                 </div>
-                <p className="review-second">{review.content}</p>
-                <div className="review-third">
+                <p className="book-review-second">{review.content}</p>
+                <div className="book-review-third">
                   <p
-                    className={`review-like ${review.userLiked ? 'bold' : ''}`}
+                    className={`book-review-like ${review.userLiked ? 'bold' : ''}`}
                     onClick={() => handleLikeReview(index)}
                   >
                     <BiLike /> <span className="text-margin">{review.likes}</span>
                   </p>
                   <p
-                    className={`review-dislike ${review.userDisliked ? 'bold' : ''}`}
+                    className={`book-review-dislike ${review.userDisliked ? 'bold' : ''}`}
                     onClick={() => handleDislikeReview(index)}
                   >
                     <BiDislike /> <span className="text-margin">{review.dislikes}</span>
                   </p>
-                  <p className="review-comment" onClick={() => expandReviews(index)}>
+                  <p className="book-review-comment" onClick={() => expandReviews(index)}>
                     <FaRegCommentDots /> <span className="text-margin">{review.comments.length}</span>
                   </p>
                 </div>
@@ -401,8 +401,8 @@ const BookPage = () => {
               ) : null}
             </div>
           ))}
-          <form className="add-review-form" onSubmit={handleAddReview}>
-            <div className="add-review-first">
+          <form className="add-book-review-form" onSubmit={handleAddReview}>
+            <div className="add-book-review-first">
               {[1, 2, 3, 4, 5].map((star) => {
                 const halfStarValue = star * 2 - 1;
                 const fullStarValue = star * 2;
@@ -434,7 +434,7 @@ const BookPage = () => {
                 );
               })}
             </div>
-            <div className="add-review-second">
+            <div className="add-book-review-second">
               <textarea
                 name="content"
                 value={newReview.content}
@@ -442,7 +442,7 @@ const BookPage = () => {
                 placeholder="Write your review..."
               ></textarea>
             </div>
-            <div className="add-review-third"><button type="submit">Submit Review</button></div>
+            <div className="add-book-review-third"><button type="submit">Submit Review</button></div>
           </form>
         </div>
       </div>
