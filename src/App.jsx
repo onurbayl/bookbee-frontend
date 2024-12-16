@@ -6,6 +6,7 @@ import Login from './pages/components/Login/Login';
 import Register from './pages/components/Register/Register';
 import ProtectedRoute from './pages/protectedRoute/ProtectedRoute';
 import AdminPanel from './pages/components/AdminPanel/AdminPanel';
+import UserPage from './pages/UserPage/UserPage'; // Import the UserPage component
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/user" element={<UserPage />} /> {/* Add UserPage route */}
       </Routes>
     </Router>
     

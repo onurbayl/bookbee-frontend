@@ -1,0 +1,26 @@
+.user-page-container {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+  flex-wrap: wrap; /* Allows for responsiveness */
+}
+
+.profile-section {
+  flex: 1;
+  min-width: 350px;
+  max-width: 600px; /* Ensure the reviews section is not too wide */
+}
+
+.reviews-section {
+  flex: 1.5;
+  min-width: 350px;
+}
+
+/* Optional: Add some padding and margins to sections for better spacing */
+.profile-section,
+.reviews-section {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
