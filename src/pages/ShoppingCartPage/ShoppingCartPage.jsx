@@ -119,7 +119,8 @@ const ShoppingCartPage = () => {
                                 </div>
                             </div>
                         </div>
-                    ))}        </div>
+                    ))}
+                </div>
             ) : <p className="no-cart">Your shopping cart is empty!</p>}
             <div className="coupons">
                 <div className="coupon-header">

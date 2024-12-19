@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import './Sidebar.css';
 import Slider from 'react-slider';
+import { Link } from 'react-router-dom';
+import { useSearch } from "../../../SearchContext";
 
 const Sidebar = () => {
-  const [selectedIndices, setSelectedIndices] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 50]);
-  const [ratingRange, setRatingRange] = useState([0, 5]);
+  const {
+    genreFilter,
+    setGenreFilter,
+    priceRange,
+    setPriceRange,
+    ratingRange,
+    setRatingRange
+  } = useSearch();
+
   const topCategories = [
     "Best Seller Books",
     "Most Interested Books",
@@ -28,21 +36,15 @@ const Sidebar = () => {
     "World Classics",
   ];
 
-  const changeSelection = (index) => {
-    if (selectedIndices.includes(index)) {
-      setSelectedIndices(selectedIndices.filter((i) => i !== index));
+  const changeSelection = (category) => {
+    if (genreFilter.includes(category)) 
+    {
+      setGenreFilter(genreFilter.filter((item) => item !== category));
+    } 
+    else 
+    {
+      setGenreFilter([...genreFilter, category]);
     }
-    else {
-      setSelectedIndices([...selectedIndices, index]);
-    }
-  };
-
-  const handlePriceChange = (values) => {
-    setPriceRange(values);
-  };
-
-  const handleRatingChange = (values) => {
-    setRatingRange(values);
   };
 
   return (
@@ -57,8 +59,8 @@ const Sidebar = () => {
         {categories.map((category, index) => (
           <li
             key={index}
-            className={selectedIndices.includes(index) ? "selected" : ""}
-            onClick={() => changeSelection(index)}
+            className={genreFilter.includes(category) ? "selected" : ""}
+            onClick={() => changeSelection(category)}
           >
             {category}
           </li>
@@ -75,7 +77,7 @@ const Sidebar = () => {
             max={50}
             step={1}
             value={priceRange}
-            onChange={handlePriceChange}
+            onChange={setPriceRange}
             className="slider"
             trackClassName="track"
             thumbClassName="thumb"
@@ -91,14 +93,15 @@ const Sidebar = () => {
             max={5}
             step={0.1}
             value={ratingRange}
-            onChange={handleRatingChange}
+            onChange={setRatingRange}
             className="slider"
             trackClassName="track"
             thumbClassName="thumb"
           />
         </div>
       </div>
-      <button className="search-btn">Search</button>
+      <Link to={"/search"}><button className="search-btn">Search</button> </Link>
+      
     </aside>
   );
 }

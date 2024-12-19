@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import Rating from '../components/Rating/Rating';
 import './BookPage.css';
 import { IoMdCheckmarkCircleOutline, IoMdTime } from "react-icons/io";
-import { IoBookOutline, IoStar } from "react-icons/io5";
+import { IoBookOutline } from "react-icons/io5";
 import { FaHeart, FaRegCommentDots } from "react-icons/fa";
 import { BiLike, BiDislike } from "react-icons/bi";
 
@@ -290,7 +290,7 @@ const BookPage = () => {
               <p><strong>Barcode</strong>: {book.barcode}</p>
               <p><strong>ISBN</strong>: {book.isbn}</p>
               <p><strong>Edition</strong>: {book.editionNumber}</p>
-              <p><IoStar /> {book.rating} ({book.reviewCount} Reviews)</p>
+              <p> <strong> ★ </strong> {book.rating} ({book.reviewCount} Reviews)</p>
             </div>
             <div className="book-flag-container">
               <p
