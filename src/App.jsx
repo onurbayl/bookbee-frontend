@@ -11,6 +11,8 @@ import AdminPanel from './pages/components/AdminPanel/AdminPanel';
 import UserPage from './pages/UserPage/UserPage'; // Import the UserPage component
 import ShoppingCartPage from './pages/ShoppingCartPage/ShoppingCartPage';
 import SearchFilterPage from "./pages/SearchFilterPage/SearchFilterPage";
+import AuthorPage from "./pages/AuthorPage/AuthorPage";
+import PublisherPage from "./pages/PublisherPage/PublisherPage";
 
 const App = () => {
   return (
@@ -30,6 +32,8 @@ const App = () => {
           <Route path="/user" element={<UserPage />} /> {/* Add UserPage route */}
           <Route path="/cart" element={<ShoppingCartPage />} />
           <Route path="/search" element={<SearchFilterPage />} />
+          <Route path="/author/:id" element={<AuthorPage />} />
+          <Route path="/publisher/:id" element={<PublisherPage />} />
         </Routes>
       </Router>
     </SearchProvider>

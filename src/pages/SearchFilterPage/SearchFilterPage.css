@@ -19,6 +19,7 @@
 .search-results-line {
     height: 5px;
     background: #CAB295;
+    margin-bottom: 20px;
 }
 
 .search-book-header {
@@ -35,96 +36,6 @@
 
 .search-book-header h3 {
     margin-left: 20px;
-}
-
-.search-book-results {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    margin-bottom: 50px;
-}
-
-.search-book {
-    display: flex;
-    align-items: center;
-    border: 1px solid #DDD;
-    border-radius: 8px;
-    background-color: white;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-}
-
-.search-book-placeholder-image {
-    width: 140px;
-    height: 160px;
-    background-color: #C4C4C4;
-    border-radius: 4px;
-    margin-left: 20px;
-}
-
-.search-book-details {
-    flex-direction: row;
-    align-self: flex-start;
-    width: 300px;
-    margin-left: 50px;
-}
-
-.search-book-details-second {
-    flex: 2;
-    align-self: flex-end;
-    margin-top: 40px;
-}
-
-.search-book-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 0;
-}
-
-.search-book-author {
-    font-size: 0.9rem;
-    color: #555;
-    margin-top: 5px;
-    margin-bottom: 0;
-}
-
-.search-book-publisher {
-    font-size: 0.9rem;
-    color: #555;
-    margin-top: 5px;
-}
-
-.search-book-rating {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 0;
-}
-
-.other-book-info {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.8rem;
-    color: #555;
-    margin-left: 50px;
-    width: 300px;
-}
-
-.other-book-info p {
-    margin: 2px;
-}
-
-.search-book-price {
-    text-align: right;
-    width: 100px;
-    margin-top: auto;
-    margin-bottom: 0;
-    padding: 5px;
-    margin-left: 50px;
-}
-
-.search-book-final-price {
-    font-size: 1.4rem;
 }
 
 .search-author-header {
