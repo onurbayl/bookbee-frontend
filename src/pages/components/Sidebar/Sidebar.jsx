@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Sidebar.css';
 import Slider from 'react-slider';
 import { Link } from 'react-router-dom';

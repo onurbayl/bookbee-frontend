@@ -1,0 +1,39 @@
+.author-books-page {
+    display: flex;
+    gap: 20px;
+}
+
+.author-results-section {
+    flex: 1;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1000px;
+    padding-top: 15px;
+}
+
+.author-results-section h3 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.author-book-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.author-book-header p {
+    font-size: 1.2rem;
+    margin: 0;
+    margin-top: 8px;
+}
+
+.author-book-header h3 {
+    margin-left: 20px;
+}
+
+.author-results-line {
+    height: 5px;
+    background: #CAB295;
+    margin-bottom: 20px;
+}
