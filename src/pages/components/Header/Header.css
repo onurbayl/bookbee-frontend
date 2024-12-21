@@ -70,7 +70,7 @@
 
 .auth-buttons .login-btn,
 .auth-buttons .signup-btn {
-  width: 150px;
+  width: 160px;
   text-align: center;
   border: 1px solid #767676;
   border-radius: 5px;
@@ -85,5 +85,57 @@
 
 .auth-buttons .login-btn:hover,
 .auth-buttons .signup-btn:hover {
+  background-color: #DDD;
+}
+
+.logged-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #FAFAFA;
+  margin-top: -12px;
+  margin-right: 10px
+}
+
+.logged-in p {  
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.navigation-icons {
+  width: 180px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 2rem;
+  margin-top: 5px;
+}
+
+.navigation-icon {
+  cursor: pointer;
+}
+
+.publisher-div,
+.admin-div {
+  display: flex;
+  justify-content: center;
+}
+
+.publisher-btn,
+.admin-btn {
+  width: 140px;
+  text-align: center;
+  border: 1px solid #767676;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #F5F5F5;
+  font-weight: bold;
+  font-size: 15px;
+  color: #83715B;
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.publisher-btn:hover,
+.admin-btn:hover {
   background-color: #DDD;
 }

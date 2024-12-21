@@ -25,40 +25,41 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="login-form">
-      <h3>Login</h3>
-
-      <div className="mb-3">
-        <label>Email address</label>
-        <input
-          type="email"
-          className="form-control"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-
-      <div className="mb-3">
-        <label>Password</label>
-        <input
-          type="password"
-          className="form-control"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-
-      <div className="d-grid">
-        <button type="submit" className="btn btn-primary">
-          Submit
-        </button>
-      </div>
-      <p className="forgot-password text-right">
-        New user <Link to="/register">Register Here</Link>
-      </p>
-    </form>
+    <div className="login-container">
+      <h1 className="login-title">Login</h1>
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="login-form-group">
+          <label className="form-label">Email address</label>
+          <input
+            type="email"
+            className="login-form-control"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="login-form-group">
+          <label className="form-label">Password</label>
+          <input
+            type="password"
+            className="login-form-control"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="login-submit-button-div">
+          <button type="submit" className="login-submit-button">
+            Login
+          </button>
+        </div>
+        <div className="not-account">
+          <p>
+            Do not have an account? <Link to="/register"><strong>Sign Up</strong></Link>
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }
 

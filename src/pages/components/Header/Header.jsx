@@ -4,6 +4,7 @@ import './Header.css';
 import { auth } from "../../components/firebase/firebase.js";
 import { useAuth } from '../../../AuthContext.js';
 import { useSearch } from "../../../SearchContext";
+import { FiUser, FiShoppingCart, FiLogOut } from "react-icons/fi";
 
 const Header = () => {
 
@@ -63,17 +64,35 @@ const Header = () => {
           <img src={`${process.env.PUBLIC_URL}/search.png`} alt="Search" />
         </button>
       </div>
-      <div className="auth-buttons">
-        <Link to="/admin"><button className="login-btn">Admin</button></Link>
-        {!user ?
-          (<>
-            <Link to="/login"><button className="login-btn">Login</button></Link>
-            <Link to="/register"><button className="signup-btn">Sign Up</button></Link>
-          </>
-          ) : (
-            <button className="signup-btn" onClick={handleLogout}>Logout</button>
-          )}
-      </div>
+      {!user ?
+        (<div className="auth-buttons">
+          <Link to="/login"><button className="login-btn">Login</button></Link>
+          <Link to="/register"><button className="signup-btn">Sign Up</button></Link>
+        </div>
+        ) : (
+          <div className="logged-in">
+            <p> Welcome, <strong>TTTUser</strong>!</p>
+            {user.role === "publisher" &&
+              (<div className="publisher-div">
+                <Link to="/publisher-panel">
+                  <button className="publisher-btn">Publisher Panel</button>
+                </Link>
+              </div>)
+            }
+            {user.role === "admin" &&
+              (<div className="admin-div">
+                <Link to="/admin">
+                  <button className="admin-btn">Admin Panel</button>
+                </Link>
+              </div>)
+            }
+            <div className="navigation-icons">
+              <div className="navigation-icon" onClick={() => navigate("/user")}> <FiUser /> </div>
+              <div className="navigation-icon" onClick={() => navigate("/cart")}> <FiShoppingCart /> </div>
+              <div className="navigation-icon" onClick={handleLogout}> <FiLogOut /> </div>
+            </div>
+          </div>
+        )}
     </header>
   );
 }
