@@ -13,8 +13,38 @@ import ShoppingCartPage from './pages/ShoppingCartPage/ShoppingCartPage';
 import SearchFilterPage from "./pages/SearchFilterPage/SearchFilterPage";
 import AuthorPage from "./pages/AuthorPage/AuthorPage";
 import PublisherPage from "./pages/PublisherPage/PublisherPage";
+import { useAuth } from './AuthContext';
+import { useEffect } from 'react';
+import { auth } from './pages/components/firebase/firebase';
+import axios from 'axios';
 
 const App = () => {
+  const {user, setFetchedUser} = useAuth()
+
+  const fetchUserData = async () => {
+    try {
+      const crntUser = auth.currentUser; // Get the current Firebase user
+      console.log(crntUser)
+      if (crntUser) {
+        const token = await crntUser.getIdToken(); // Await the token
+        const userData = await axios.get("http://localhost:3000/api/v1/user/bytoken", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFetchedUser(userData.data); // Set user data into state
+      }
+    } catch (error) {
+      console.log("User Fetching Error: ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) { // Only fetch data if the user exists
+      fetchUserData();
+    }
+  }, [user]);
+
   return (
     <SearchProvider>
       <Router>
