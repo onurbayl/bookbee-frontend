@@ -1,74 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ShoppingCartPage.css";
 import { FiShoppingCart } from "react-icons/fi";
 import { TbCirclePlus, TbCircleMinus } from "react-icons/tb";
 import { MdOutlineDiscount } from "react-icons/md";
-
-const initialCartItems = [
-    {
-        id: 1,
-        name: "Pride and Prejudice",
-        writer: "Jane Austen",
-        quantity: 1,
-        normalPrice: 40,
-        discountPercentage: 10,
-        finalPrice: 36,
-    },
-    {
-        id: 2,
-        name: "The Picture of Dorian Gray",
-        writer: "Oscar Wilde",
-        quantity: 3,
-        normalPrice: 50,
-        discountPercentage: 0,
-        finalPrice: 50,
-    },
-    {
-        id: 3,
-        name: "Anna Karenina",
-        writer: "Leo Tolstoy",
-        quantity: 2,
-        normalPrice: 20,
-        discountPercentage: 10,
-        finalPrice: 18,
-    },
-];
-
-const coupons = [
-    {
-        id: 1,
-        discountPercentage: 10
-    },
-    {
-        id: 2,
-        discountPercentage: 15
-    }
-];
+import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
+import axios from "axios";
 
 const ShoppingCartPage = () => {
-    const [cartItems, setCartItems] = useState(initialCartItems);
+    const [cartItems, setCartItems] = useState([]);
+    const [coupons, setCoupons] = useState([]);
     const [selectedCoupon, setSelectedCoupon] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
-    const handleIncreaseQuantity = (id) => {
-        setCartItems((prevItems) =>
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const token = await getFirebaseToken();
+    
+            const cartResponse = await axios.get("http://localhost:3000/api/v1/cart-item/get-items", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const sortedCartItems = cartResponse.data.sort((a, b) => a.id - b.id);
+            setCartItems(sortedCartItems);
+    
+            const couponResponse = await axios.get("http://localhost:3000/api/v1/coupon/get-coupons", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            setCoupons(couponResponse.data);
+          } catch (error) {
+            console.error("Error fetching cart data:", error);
+          }
+        };
+    
+        fetchData();
+      }, [refresh]);
+
+    const handleIncreaseQuantity = async (bookId) => {
+        try {
+          const token = await getFirebaseToken();
+          await axios.patch(`http://localhost:3000/api/v1/cart-item/add-item/${bookId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          setCartItems((prevItems) =>
             prevItems.map((item) =>
-                item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+              item.book.id === bookId ? { ...item, quantity: item.quantity + 1 } : item
             )
-        );
-    };
+          );
+          setRefresh((prev) => !prev);
+        } catch (error) {
+          console.error("Error increasing item quantity:", error);
+        }
+      };
 
-    const handleDecreaseQuantity = (id) => {
-        setCartItems((prevItems) =>
+    const handleDecreaseQuantity = async (bookId) => {
+        try {
+          const token = await getFirebaseToken();
+          await axios.patch(`http://localhost:3000/api/v1/cart-item/remove-item/${bookId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          setCartItems((prevItems) =>
             prevItems
-                .map((item) =>
-                    item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-                )
-                .filter((item) => item.quantity > 0)
-        );
-    };
+              .map((item) =>
+                item.book.id === bookId ? { ...item, quantity: item.quantity - 1 } : item
+              )
+              .filter((item) => item.quantity > 0)
+          );
+          setRefresh((prev) => !prev);
+        } catch (error) {
+          console.error("Error decreasing item quantity:", error);
+        }
+      };
 
     const originalTotalPrice = cartItems.reduce(
-        (sum, item) => sum + item.finalPrice * item.quantity,
+        (sum, item) => sum + item.finalPrice,
         0
     );
 
@@ -97,25 +103,25 @@ const ShoppingCartPage = () => {
                         <div key={item.id} className="cart-item">
                             <div className="placeholder-image"></div>
                             <div className="item-details">
-                                <h2 className="item-title">{item.name}</h2>
-                                <p className="item-author">{item.writer}</p>
+                                <h2 className="item-title">{item.book.name}</h2>
+                                <p className="item-author">{item.book.writer}</p>
                             </div>
                             <div className="item-quantity">
-                                <div className="circle" onClick={() => handleDecreaseQuantity(item.id)}> <TbCircleMinus /> </div>
+                                <div className="circle" onClick={() => handleDecreaseQuantity(item.book.id)}> <TbCircleMinus /> </div>
                                 <span> <strong> {item.quantity} </strong> </span>
-                                <div className="circle" onClick={() => handleIncreaseQuantity(item.id)}> <TbCirclePlus /> </div>
+                                <div className="circle" onClick={() => handleIncreaseQuantity(item.book.id)}> <TbCirclePlus /> </div>
                             </div>
                             <div className="item-price">
                                 {item.discountPercentage > 0 ? (
                                     <>
                                         <div className="item-normal-price">
-                                            <strong> <del>${(item.normalPrice * item.quantity).toFixed(2)}</del> </strong>
+                                            <strong> <del>${item.normalPrice.toFixed(2)}</del> </strong>
                                         </div>
                                         <div className="item-discount"> -{item.discountPercentage}% </div>
                                     </>
                                 ) : null}
                                 <div className="item-final-price">
-                                    <strong>${(item.finalPrice * item.quantity).toFixed(2)}</strong>
+                                    <strong>${item.finalPrice.toFixed(2)}</strong>
                                 </div>
                             </div>
                         </div>

@@ -29,8 +29,12 @@ const App = () => {
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/user" element={<UserPage />} /> {/* Add UserPage route */}
-          <Route path="/cart" element={<ShoppingCartPage />} />
+          <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+            <Route index element={<UserPage />} />
+          </Route>
+          <Route path="/cart" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+            <Route index element={<ShoppingCartPage />} />
+          </Route>
           <Route path="/search" element={<SearchFilterPage />} />
           <Route path="/author/:id" element={<AuthorPage />} />
           <Route path="/publisher/:id" element={<PublisherPage />} />
