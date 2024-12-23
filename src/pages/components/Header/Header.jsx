@@ -8,7 +8,7 @@ import { FiUser, FiShoppingCart, FiLogOut } from "react-icons/fi";
 
 const Header = () => {
 
-  const { user, setUser } = useAuth();
+  const { user, setUser, fetchedUser, setFetchedUser } = useAuth();
   const { searchQuery, setSearchQuery, resetSearchQuery, resetFilters } = useSearch();
   const navigate = useNavigate()
 
@@ -23,6 +23,8 @@ const Header = () => {
       console.error("Error logging out:", error.message);
     } finally {
       setUser(null)
+      setFetchedUser(null)
+
     }
   }
 
@@ -71,7 +73,7 @@ const Header = () => {
         </div>
         ) : (
           <div className="logged-in">
-            <p> Welcome, <strong>TTTUser</strong>!</p>
+            <p> Welcome, <strong>{fetchedUser ? fetchedUser.name : "Guest"}</strong>!</p>
             {user.role === "publisher" &&
               (<div className="publisher-div">
                 <Link to="/publisher-panel">

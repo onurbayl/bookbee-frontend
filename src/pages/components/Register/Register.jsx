@@ -46,7 +46,7 @@ function Register() {
     e.preventDefault();
     try {
       console.log("Registered triggered")
-      setNewAccountCreationPending(true);
+      //setNewAccountCreationPending(true);
 
 
       await createUserWithEmailAndPassword(auth, email, password);
@@ -57,7 +57,7 @@ function Register() {
       const requestBody = { name, email, description, uid: crnUser.uid }
       const response = await axios.post("http://127.0.0.1:3000/api/v1/user/create", requestBody)
       console.log("Create user in database response: ", response.data)
-      setNewAccountCreationPending(false);
+      //setNewAccountCreationPending(false);
 
       await auth.signOut();
 
