@@ -5,10 +5,11 @@ import { auth } from "../../components/firebase/firebase.js";
 import { useAuth } from '../../../AuthContext.js';
 import { useSearch } from "../../../SearchContext";
 import { FiUser, FiShoppingCart, FiLogOut } from "react-icons/fi";
+import { ClipLoader } from 'react-spinners';
 
 const Header = () => {
 
-  const { user, setUser, fetchedUser, setFetchedUser } = useAuth();
+  const { user, setUser, fetchedUser, setFetchedUser, loading } = useAuth();
   const { searchQuery, setSearchQuery, resetSearchQuery, resetFilters } = useSearch();
   const navigate = useNavigate()
 
@@ -66,12 +67,15 @@ const Header = () => {
           <img src={`${process.env.PUBLIC_URL}/search.png`} alt="Search" />
         </button>
       </div>
-      {!user ?
+      {loading && <div style={{ display: "inline-block", marginLeft: "10px" }}>
+      <ClipLoader color="#007bff" size={20} /> {/* Compact spinner */}
+    </div>}
+      {!user && !loading ?
         (<div className="auth-buttons">
           <Link to="/login"><button className="login-btn">Login</button></Link>
           <Link to="/register"><button className="signup-btn">Sign Up</button></Link>
         </div>
-        ) : (
+        ) : !loading && (
           <div className="logged-in">
             <p> Welcome, <strong>{fetchedUser ? fetchedUser.name : "Guest"}</strong>!</p>
             {user.role === "publisher" &&

@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../AuthContext.js";
 import { auth } from "../components/firebase/firebase.js";
+import { ClipLoader } from "react-spinners";
 
 function ProtectedRoute({ allowedRoles }) {
   const { user, loading } = useAuth();
@@ -12,7 +13,9 @@ function ProtectedRoute({ allowedRoles }) {
   }
 
   if(loading){
-    return <div>Loading!!!</div>
+    return (<div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <ClipLoader color="#36d7b7" loading={loading} size={50} />
+      </div>)
   }
   
   if (!allowedRoles.includes(localUser.role)) {

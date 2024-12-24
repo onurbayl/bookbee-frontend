@@ -26,13 +26,15 @@ export function AuthProvider({ children }) {
             role: tokenResult.claims.role || "user", // Default to 'user' if no role
           };
           setUser(userData)
-          
+          localStorage.setItem("user", JSON.stringify(userData));
         } catch (error) {
           console.error("Error fetching or creating user data:", error);
           setUser(null); // Set to null in case of error
+          localStorage.removeItem("user");
         }
       } else {
         setUser(null); // Clear user state when logged out
+        localStorage.removeItem("user");
       }
       setLoading(false); // Set loading to false once the user data is loaded
     });
