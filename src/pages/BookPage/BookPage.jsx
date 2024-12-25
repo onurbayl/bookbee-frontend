@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import Sidebar from '../components/Sidebar/Sidebar';
 import Rating from '../components/Rating/Rating';
 import './BookPage.css';
@@ -6,8 +7,12 @@ import { IoMdCheckmarkCircleOutline, IoMdTime } from "react-icons/io";
 import { IoBookOutline } from "react-icons/io5";
 import { FaHeart, FaRegCommentDots } from "react-icons/fa";
 import { BiLike, BiDislike } from "react-icons/bi";
+import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
+import axios from "axios";
+import { useAuth } from '../../AuthContext.js';
+import { CiCircleRemove } from "react-icons/ci";
 
-const book = {
+const sample_book = {
   id: 1,
   name: "Animal Farm",
   description: `A farm is taken over by its overworked, mistreated animals. With flaming idealism and stirring slogans, they set out to create a paradise of progress, justice, and equality. Thus the stage is set for one of the most telling satiric fables ever penned—a razor-edged fairy tale for grown-ups that records the evolution from revolution against tyranny to a totalitarianism just as terrible.
@@ -29,45 +34,70 @@ const book = {
   finalPrice: 19.80
 };
 
-const initialReviews = {
-  reviews: [
-    {
-      username: "B&NCarlyR",
-      score: 8,
-      content:
-        "I enjoyed this when I first read it and enjoyed it even more when I was older and had a fuller understanding of the book. So glad I picked this one up again.",
-      likes: 28,
-      dislikes: 6,
-      comments: [
-        {
-          username: "JimRGill",
-          content: "I totally agree with you!",
-          likes: 8,
-          dislikes: 3,
-        }
-      ],
-    },
-    {
-      username: "ShadowHunter16",
-      score: 3,
-      content:
-        "Had to read this for school. If given the choice I would never have read this. It was depressing and boring. Also, I felt that it was meant for adults, not teenagers.",
-      likes: 4,
-      dislikes: 19,
-      comments: [],
-    },
-  ]
-}
-
-
 const BookPage = () => {
-
-  const [reviews, setReviews] = useState(initialReviews);
+  const { id: bookId } = useParams();
+  const { user } = useAuth();
+  const [book, setBook] = useState(sample_book);
+  const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ score: 0, content: '' });
   const [newComments, setNewComments] = useState({})
   const [hoveredStars, setHoveredStars] = useState(0);
   const [expandedReviews, setExpandedReviews] = useState([]);
   const [selectedFlag, setSelectedFlag] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const fetchReviewsWithComments = async () => {
+      try {
+        // Fetch reviews
+        const reviewsResponse = await axios.get(
+          `http://localhost:3000/api/v1/review/get-reviews-book/${bookId}`
+        );
+        const reviews = reviewsResponse.data || [];
+
+        // Fetch comments for each review
+        const reviewsWithComments = await Promise.all(
+          reviews.map(async (review) => {
+            const commentsResponse = await axios.get(
+              `http://localhost:3000/api/v1/comment/get-comments-by-review/${review.id}`
+            );
+            return {
+              ...review,
+              comments: commentsResponse.data || [],
+            };
+          })
+        );
+
+        setReviews(reviewsWithComments);
+      } catch (error) {
+        console.error("Error fetching reviews or comments:", error);
+      }
+    };
+
+    fetchReviewsWithComments();
+  }, [bookId, refresh]);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const token = await getFirebaseToken();
+
+        const userResponse = await axios.get(
+          `http://localhost:3000/api/v1/user/bytoken`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setCurrentUser(userResponse.data);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [user]);
 
   const handleStarHover = (event, star) => {
     const { left, width } = event.target.getBoundingClientRect();
@@ -102,68 +132,71 @@ const BookPage = () => {
     }));
   };
 
-  const handleAddReview = (e) => {
+  const handleAddReview = async (e) => {
     e.preventDefault();
 
     if (!newReview.content) {
-      alert("Please enter valid review.");
+      alert("Please enter a valid review.");
       return;
     }
 
-    setReviews((prevReviews) => ({
-      reviews: [
-        ...prevReviews.reviews,
-        {
-          username: "current_user",
-          score: newReview.score,
-          content: newReview.content,
-          likes: 0,
-          dislikes: 0,
-          comments: [],
-        },
-      ],
-    }));
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/review/add-review/${bookId}`,
+        newReview,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    setNewReview({ score: 0, content: '' });
-    setHoveredStars(0);
+      setRefresh((prev) => !prev);
+      setNewReview({ score: 0, content: "" });
+      setHoveredStars(0);
+    } catch (error) {
+      console.error("Error adding review:", error);
+    }
   };
 
-  const handleAddComment = (e, reviewIndex) => {
+  const handleDeleteReview = async () => {
+    try {
+      const token = await getFirebaseToken();
+      await axios.delete(
+        `http://localhost:3000/api/v1/review/delete-review/${bookId}/${currentUser.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
+
+  const handleAddComment = async (e, reviewId, reviewIndex) => {
     e.preventDefault();
-  
+
     if (!newComments[reviewIndex]) {
       alert("Please enter a valid comment.");
       return;
     }
-  
-    setReviews((prevReviews) => {
-      const updatedReviews = prevReviews.reviews.map((review, index) =>
-        index === reviewIndex
-          ? {
-              ...review,
-              comments: [
-                ...review.comments,
-                {
-                  username: "current_user",
-                  content: newComments[reviewIndex],
-                  likes: 0,
-                  dislikes: 0,
-                },
-              ],
-            }
-          : review
+
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/comment/add-comment/${reviewId}`,
+        { content: newComments[reviewIndex] },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      return { ...prevReviews, reviews: updatedReviews };
-    });
-  
-    setNewComments((prevComments) => ({
-      ...prevComments,
-      [reviewIndex]: "",
-    }));
+
+      setRefresh((prev) => !prev);
+      setNewComments((prevComments) => ({
+        ...prevComments,
+        [reviewIndex]: "",
+      }));
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
   };
 
-  const expandReviews = (index) => {
+  const expandReviews = async (index) => {
     if (expandedReviews.includes(index)) {
       setExpandedReviews(expandedReviews.filter((i) => i !== index));
     }
@@ -333,28 +366,35 @@ const BookPage = () => {
         <div className="book-reviews-section">
           <h2>Reviews</h2>
           <div className="book-reviews-line"></div>
-          {reviews.reviews.map((review, index) => (
-            <div key={index} className="review">
+          {reviews.map((review, index) => (
+            <div key={review.id} className="review">
               <div className="book-review-data">
                 <div className="book-review-first">
-                  <h4>{review.username}</h4>
+                  <h4>{review.user.name}</h4>
                   <Rating score={review.score} />
                 </div>
                 <p className="book-review-second">{review.content}</p>
+                {currentUser && (currentUser.id === review.user.id) && (
+                  <p className="book-review-delete"
+                    onClick={handleDeleteReview}>
+                    <CiCircleRemove />
+                  </p>
+                )
+                }
                 <div className="book-review-third">
                   <p
                     className={`book-review-like ${review.userLiked ? 'bold' : ''}`}
                     onClick={() => handleLikeReview(index)}
                   >
-                    <BiLike /> <span className="text-margin">{review.likes}</span>
+                    <BiLike /> <span className="text-margin">{review.likeCount}</span>
                   </p>
                   <p
                     className={`book-review-dislike ${review.userDisliked ? 'bold' : ''}`}
                     onClick={() => handleDislikeReview(index)}
                   >
-                    <BiDislike /> <span className="text-margin">{review.dislikes}</span>
+                    <BiDislike /> <span className="text-margin">{review.dislikeCount}</span>
                   </p>
-                  <p className="book-review-comment" onClick={() => expandReviews(index)}>
+                  <p className="book-review-comment" onClick={() => expandReviews(index, review.id)}>
                     <FaRegCommentDots /> <span className="text-margin">{review.comments.length}</span>
                   </p>
                 </div>
@@ -364,20 +404,20 @@ const BookPage = () => {
                   <div className="comments-list">
                     {review.comments.map((comment, commentIndex) => (
                       <div key={commentIndex} className="comment">
-                        <div className="comment-first"> <h4>{comment.username}</h4> </div>
+                        <div className="comment-first"> <h4>{comment.user.name}</h4> </div>
                         <div className="comment-second"> {comment.content} </div>
                         <div className="comment-third">
                           <p
-                            className={`comment-like ${comment.userLiked ? 'bold' : ''}`}
+                            className={`comment-like ${comment.likeCount ? 'bold' : ''}`}
                             onClick={() => handleLikeComment(index, commentIndex)}
                           >
-                            <BiLike /> <span className="text-margin">{comment.likes}</span>
+                            <BiLike /> <span className="text-margin">{comment.likeCount}</span>
                           </p>
                           <p
                             className={`comment-dislike ${comment.userDisliked ? 'bold' : ''}`}
                             onClick={() => handleDislikeComment(index, commentIndex)}
                           >
-                            <BiDislike /> <span className="text-margin">{comment.dislikes}</span>
+                            <BiDislike /> <span className="text-margin">{comment.dislikeCount}</span>
                           </p>
                         </div>
                       </div>
@@ -386,8 +426,8 @@ const BookPage = () => {
                   <div className="no-comment"> No comments available for this review. </div>
                 )
               ) : null}
-              {expandedReviews.includes(index) ? (
-                <form className="add-comment-form" onSubmit={(e) => handleAddComment(e, index)}>
+              {expandedReviews.includes(index) && user ? (
+                <form className="add-comment-form" onSubmit={(e) => handleAddComment(e, review.id, index)}>
                   <div className="add-comment-text">
                     <textarea
                       name="content"
@@ -401,7 +441,7 @@ const BookPage = () => {
               ) : null}
             </div>
           ))}
-          <form className="add-book-review-form" onSubmit={handleAddReview}>
+          {user && (<form className="add-book-review-form" onSubmit={handleAddReview}>
             <div className="add-book-review-first">
               {[1, 2, 3, 4, 5].map((star) => {
                 const halfStarValue = star * 2 - 1;
@@ -443,7 +483,7 @@ const BookPage = () => {
               ></textarea>
             </div>
             <div className="add-book-review-third"><button type="submit">Submit Review</button></div>
-          </form>
+          </form>)}
         </div>
       </div>
     </div>

@@ -139,10 +139,20 @@
   color: #555;
 }
 
+.book-review-delete {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: auto;
+  padding-left: 20px;
+}
+
 .book-review-third {
   display: flex;
   flex-direction: column;
   margin: 20px;
+  margin-left: 0;
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -190,7 +200,7 @@
 }
 
 .comment-first {
-  width: 80px;
+  width: 100px;
   align-self: center;
 }
 
