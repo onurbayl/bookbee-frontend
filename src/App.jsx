@@ -53,9 +53,11 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/book/:id" element={<BookPage />} />
 
-          <Route path="admin" element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin" element={<AdminPanel />}/> {/*
+          element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route index element={<AdminPanel />} />
           </Route>
+          */}
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
