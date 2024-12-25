@@ -1,0 +1,106 @@
+.wallet-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.wallet-popup {
+  background: #fff;
+  width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.wallet-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.close-button {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.wallet-balance {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.wallet-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wallet-subpage {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  text-align: left;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.wallet-action-button {
+  background-color: #D1B894;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.wallet-action-button:hover {
+  background-color: #C4A88A;
+}
+
+.wallet-back-button {
+  background-color: #bca588;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.wallet-back-button:hover {
+  background-color: #a38c72;
+}
