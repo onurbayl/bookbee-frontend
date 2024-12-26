@@ -13,6 +13,7 @@ import ShoppingCartPage from './pages/ShoppingCartPage/ShoppingCartPage';
 import SearchFilterPage from "./pages/SearchFilterPage/SearchFilterPage";
 import AuthorPage from "./pages/AuthorPage/AuthorPage";
 import PublisherPage from "./pages/PublisherPage/PublisherPage";
+import PublisherPanel from './pages/PublisherPanelPage/PublisherPanelPage';
 import { useAuth } from './AuthContext';
 import { useEffect } from 'react';
 import { auth } from './pages/components/firebase/firebase';
@@ -70,6 +71,7 @@ const App = () => {
           <Route path="/search" element={<SearchFilterPage />} />
           <Route path="/author/:id" element={<AuthorPage />} />
           <Route path="/publisher/:id" element={<PublisherPage />} />
+          <Route path="/publisher-panel" element={<PublisherPanel/>} />
         </Routes>
       </Router>
     </SearchProvider>
