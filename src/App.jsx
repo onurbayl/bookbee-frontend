@@ -15,6 +15,7 @@ import AuthorPage from "./pages/AuthorPage/AuthorPage";
 import PublisherPage from "./pages/PublisherPage/PublisherPage";
 import PublisherPanel from './pages/PublisherPanelPage/PublisherPanelPage';
 import UserPastOrdersPage from "./pages/components/UserPastOrdersPage/UserPastOrdersPage";
+import PastActivity from "./pages/components/PastActivity/PastActivity";
 import { useAuth } from './AuthContext';
 import { useEffect } from 'react';
 import { auth } from './pages/components/firebase/firebase';
@@ -65,6 +66,7 @@ const App = () => {
           <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
             <Route index element={<UserPage />} />
             <Route path="past-orders" element={<UserPastOrdersPage />} /> {/* Correct nested route */}
+            <Route path="past-activity" element={<PastActivity />} /> {/* Correct nested route */}
           </Route>
 
           

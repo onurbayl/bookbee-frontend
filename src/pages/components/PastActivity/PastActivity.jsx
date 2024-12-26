@@ -14,11 +14,13 @@ const PastActivity = () => {
       <div className="review-list">
         {reviews.map((review) => (
           <div key={review.id} className="review-item">
-            <div className="review-content">
-              <h4>{review.book}</h4>
-              <p>By: {review.author}</p>
+            <div className="review-details">
+              <h2 className="review-book-title">{review.book}</h2>
+              <p className="review-book-author">By: {review.author}</p>
+              <p className="review-rating">Rating: {"★".repeat(review.rating)}</p>
+            </div>
+            <div className="review-text">
               <p>{review.review}</p>
-              <p>Rating: {"★".repeat(review.rating)}</p>
             </div>
           </div>
         ))}
