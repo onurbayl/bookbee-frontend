@@ -19,26 +19,46 @@ h2 {
 .review-list {
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
 .review-item {
   display: flex;
-  flex-direction: column;
-  padding: 10px 15px;
-  background: #fff;
-  border-radius: 6px;
+  flex-direction: row;
+  align-items: flex-start;
+  border: 1px solid #DDD;
+  border-radius: 8px;
+  background-color: white;
+  padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
 }
 
-.review-content h4 {
+.review-details {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.review-book-title {
+  font-size: 1.2rem;
+  font-weight: bold;
   margin: 0;
-  font-size: 16px;
-  color: #333;
 }
 
-.review-content p {
-  margin: 5px 0;
-  font-size: 14px;
+.review-book-author {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 5px;
+}
+
+.review-rating {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #f39c12;
+  margin-top: 5px;
+}
+
+.review-text {
+  flex: 2;
+  font-size: 0.9rem;
   color: #666;
 }

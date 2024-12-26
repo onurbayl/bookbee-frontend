@@ -3,6 +3,7 @@
   gap: 30px;
   padding: 20px;
   flex-wrap: wrap; /* Allows for responsiveness */
+  align-items: flex-start; /* Aligns items to the top */
 }
 
 .profile-section {
@@ -29,27 +30,32 @@
   position: relative;
 }
 
-.wallet-button {
+.top-buttons {
   position: absolute;
   top: 20px;
   right: 20px;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
-.past-orders-button {
-  margin-top: 20px;
+.wallet-button {
+  margin-left: 10px; /* Space between buttons */
+  cursor: pointer;
+  font-size: 40px; /* Adjust icon size */
+}
+
+.past-orders-button,
+.past-activity-button {
   padding: 10px 20px;
-  background-color: #007bff; /* Match the button color */
+  background-color: #cab295; /* Match the button color */
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  align-self: center;
 }
 
-.past-orders-button:hover {
-  background-color: #0056b3; /* Slightly darker on hover */
+.past-orders-button:hover,
+.past-activity-button:hover {
+  background-color: #a9876f; /* Slightly darker on hover */
 }
