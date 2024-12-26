@@ -1,32 +1,137 @@
-/* Updated admin panel container to leave space for the navbar */
-.admin-panel-container {
+.manage-users-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100vh; /* Full viewport height */
-  background-color: white;
+  gap: 20px;
   padding: 20px;
-  padding-top: 60px; /* Adjust for the height of your navbar */
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  max-width: 1200px; /* Increased max-width for more space */
+  width: 100%; /* Ensures the container spans full width */
+  margin: 0 auto; /* Centers the container */
 }
 
-/* Rest of your CSS remains unchanged */
-.admin-buttons {
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.input-box {
+  background-color: white; /* White background */
+  border: 1px solid #ddd; /* Light grey border */
+  border-radius: 5px; /* Slightly rounded corners */
+  padding: 10px 15px; /* Adequate padding to make it look like a search bar */
+  width: 100%; /* Full width inside the container */
+  max-width: 400px; /* You can adjust the max width if needed */
+  font-size: 1rem; /* Make the text a bit larger for readability */
+  margin-top: 5px; /* Space from label */
+  outline: none; /* Remove the default outline */
+}
+
+.input-box:focus {
+  border-color: #ffffff; /* Blue border on focus */
+}
+
+.input-box::placeholder {
+  color: #888; /* Lighter placeholder text */
+  font-style: italic;
+}
+
+.user-actions {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 160px; /* Increased gap for more horizontal spacing */
+  align-items: center; /* Keeps items vertically aligned */
 }
 
-.admin-button, .back-button {
-  background-color: #007bff;
+.action-button {
+  background-color: #dc3545;
   color: white;
+  padding: 10px;
   border: none;
-  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  min-width: 120px;
 }
 
-.admin-button:hover, .back-button:hover {
-  background-color: #0056b3;
+.action-button:hover {
+  background-color: #c82333;
+}
+
+/* Coupon Section */
+.coupon-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.coupon-container input {
+  width: 120px;
+  padding: 5px;
+  font-size: 1rem;
+}
+
+.coupon-container button {
+  padding: 6px 12px;
+  font-size: 1rem;
+  background-color: #28a745;
+}
+
+.reset-button {
+  background-color: #28a745;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background-color: #218838;
+}
+
+.role-dropdown {
+  margin-left: 10px;
+}
+
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 16px; /* Increased padding for a larger button */
+  font-size: 1.1rem; /* Slightly larger font size */
+  border-radius: 6px; /* Slightly larger border radius */
+  cursor: pointer;
+  position: absolute; /* Move to the right side */
+  right: 10px;
+  top: 50%; /* Center it vertically */
+  transform: translateY(-50%); /* Adjusts to true center */
+}
+
+.delete-button:hover {
+  background-color: #e60000;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start; /* Align the review content to the left */
+  position: relative;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.review-content {
+  flex: 1;
+  text-align: left; /* Aligns text to the left */
+}
+
+.review-content h4 {
+  margin: 0;
+}
+
+.review-content p {
+  margin: 5px 0;
+}
+
+.review-content p:last-child {
+  font-weight: bold;
 }
