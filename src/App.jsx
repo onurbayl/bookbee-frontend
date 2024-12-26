@@ -19,9 +19,11 @@ import { useAuth } from './AuthContext';
 import { useEffect } from 'react';
 import { auth } from './pages/components/firebase/firebase';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
-  const {user, setFetchedUser} = useAuth()
+  const { user, setFetchedUser } = useAuth()
 
   const fetchUserData = async () => {
     try {
@@ -48,36 +50,39 @@ const App = () => {
   }, [user]);
 
   return (
-    <SearchProvider>
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/book/:id" element={<BookPage />} />
+    <>
+      <ToastContainer />
+      <SearchProvider>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/book/:id" element={<BookPage />} />
 
-          <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]} />}>
-            <Route index element={<AdminPanel />} />
-          </Route>
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route index element={<AdminPanel />} />
+            </Route>
 
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
-            <Route index element={<UserPage />} />
-            <Route path="past-orders" element={<UserPastOrdersPage />} /> {/* Correct nested route */}
-          </Route>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+              <Route index element={<UserPage />} />
+              <Route path="past-orders" element={<UserPastOrdersPage />} /> {/* Correct nested route */}
+            </Route>
 
-          
-          <Route path="/cart" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
-            <Route index element={<ShoppingCartPage />} />
-          </Route>
-          <Route path="/search" element={<SearchFilterPage />} />
-          <Route path="/author/:id" element={<AuthorPage />} />
-          <Route path="/publisher/:id" element={<PublisherPage />} />
-          <Route path="/publisher-panel" element={<PublisherPanel/>} />
-        </Routes>
-      </Router>
-    </SearchProvider>
+
+            <Route path="/cart" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+              <Route index element={<ShoppingCartPage />} />
+            </Route>
+            <Route path="/search" element={<SearchFilterPage />} />
+            <Route path="/author/:id" element={<AuthorPage />} />
+            <Route path="/publisher/:id" element={<PublisherPage />} />
+            <Route path="/publisher-panel" element={<PublisherPanel />} />
+          </Routes>
+        </Router>
+      </SearchProvider>
+    </>
   );
 }
 

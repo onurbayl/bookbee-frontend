@@ -7,19 +7,21 @@ const BookGrid = ({ books }) => {
         <div className="search-book-results">
             {books.map((book) => (
                 <Link key={book.id} to={`/book/${book.id}`} className="search-book">
-                    <div className="search-book-placeholder-image"></div>
+                  <div className="search-book-image">
+                    <img src={`${process.env.PUBLIC_URL}/${book.imagePath}`} alt={book.name} />
+                  </div>
                     <div className="search-book-details">
                         <div className="search-book-details-first">
                             <h2 className="search-book-title">{book.name}</h2>
                             <p className="search-book-author">{book.writer}</p>
-                            <p className="search-book-publisher">{book.publisher}</p>
+                            <p className="search-book-publisher">{book.publisher.name}</p>
                         </div>
                         <div className="search-book-details-second">
-                            <p className="search-book-rating">★ {book.rating}</p>
+                            <p className="search-book-rating">★ {book.rating.toFixed(1)}</p>
                         </div>
                     </div>
                     <div className="other-book-info">
-                        <p>{book.genre}</p>
+                        <p>{book.genres.map((genre) => genre.name).join(", ")}</p>
                         <p>{book.pageNumber} Pages</p>
                         <p>{book.language}</p>
                         <p>{book.datePublished}</p>
@@ -31,13 +33,13 @@ const BookGrid = ({ books }) => {
                         {book.discountPercentage > 0 ? (
                             <>
                                 <div className="search-book-normal-price">
-                                    <strong> <del>${book.normalPrice.toFixed(2)}</del> </strong>
+                                    <strong> <del>${parseFloat(book.price).toFixed(2)}</del> </strong>
                                 </div>
                                 <div className="search-book-discount"> -{book.discountPercentage}% </div>
                             </>
                         ) : null}
                         <div className="search-book-final-price">
-                            <strong>${book.finalPrice.toFixed(2)}</strong>
+                            <strong>${parseFloat(book.finalPrice).toFixed(2)}</strong>
                         </div>
                     </div>
                 </Link>
