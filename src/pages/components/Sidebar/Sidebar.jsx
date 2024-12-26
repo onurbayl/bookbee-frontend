@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 import Slider from 'react-slider';
 import { Link } from 'react-router-dom';
 import { useSearch } from "../../../SearchContext";
+import axios from 'axios';
 
 const Sidebar = () => {
   const {
@@ -14,36 +15,37 @@ const Sidebar = () => {
     setRatingRange
   } = useSearch();
 
+  const [genres, setGenres] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/v1/genre/get-all-genres');
+        const sortedGenres = response.data.sort((a, b) => a.name.localeCompare(b.name));
+        setGenres(sortedGenres);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching genres:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
   const topCategories = [
     "Best Seller Books",
     "Most Interested Books",
     "Top Rated Books",
   ];
-  const categories = [
-    "Action & Adventure",
-    "Art & Photography",
-    "Biography",
-    "Detective & Mystery",
-    "Fantasy",
-    "Food & Drink",
-    "History",
-    "Poetry",
-    "Romance",
-    "Science & Technology",
-    "Science Fiction",
-    "Self-Help",
-    "Thriller",
-    "World Classics",
-  ];
 
-  const changeSelection = (category) => {
-    if (genreFilter.includes(category)) 
-    {
-      setGenreFilter(genreFilter.filter((item) => item !== category));
-    } 
-    else 
-    {
-      setGenreFilter([...genreFilter, category]);
+  const changeSelection = (genreName) => {
+    if (genreFilter.includes(genreName)) {
+      setGenreFilter(genreFilter.filter((item) => item !== genreName));
+    }
+    else {
+      setGenreFilter([...genreFilter, genreName]);
     }
   };
 
@@ -56,15 +58,19 @@ const Sidebar = () => {
       </ul>
       <br /><br />
       <ul className="categories">
-        {categories.map((category, index) => (
-          <li
-            key={index}
-            className={genreFilter.includes(category) ? "selected" : ""}
-            onClick={() => changeSelection(category)}
-          >
-            {category}
-          </li>
-        ))}
+        {loading ? (
+          <li>Loading genres...</li>
+        ) : (
+          genres.map((genre) => (
+            <li
+              key={genre.id}
+              className={genreFilter.includes(genre.name) ? "selected" : ""}
+              onClick={() => changeSelection(genre.name)}
+            >
+              {genre.name}
+            </li>
+          ))
+        )}
       </ul>
       <div className="filters">
         <div className="filter-item">

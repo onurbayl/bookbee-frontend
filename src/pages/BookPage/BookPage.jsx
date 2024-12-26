@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Sidebar from '../components/Sidebar/Sidebar';
 import Rating from '../components/Rating/Rating';
 import './BookPage.css';
@@ -11,33 +11,12 @@ import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
 import axios from "axios";
 import { useAuth } from '../../AuthContext.js';
 import { CiCircleRemove } from "react-icons/ci";
-
-const sample_book = {
-  id: 1,
-  name: "Animal Farm",
-  description: `A farm is taken over by its overworked, mistreated animals. With flaming idealism and stirring slogans, they set out to create a paradise of progress, justice, and equality. Thus the stage is set for one of the most telling satiric fables ever penned—a razor-edged fairy tale for grown-ups that records the evolution from revolution against tyranny to a totalitarianism just as terrible.
-  When Animal Farm was first published, Stalinist Russia was seen as its target. Today it is devastatingly clear that wherever and whenever freedom is attacked, under whatever banner, the cutting clarity and savage comedy of George Orwell's masterpiece have a meaning and message still ferociously fresh.`,
-  writer: "George Orwell",
-  publisher: "Penguin Publishing Group",
-  pageNumber: 176,
-  datePublished: 2004,
-  language: "English",
-  bookDimension: "8.5x5.5 inches",
-  barcode: 4567890123456,
-  isbn: "978-0-19-852663-6",
-  editionNumber: 2,
-  genre: "Allegory, Satire",
-  rating: 2.75,
-  reviewCount: 2,
-  normalPrice: 22.00,
-  discountPercentage: 10,
-  finalPrice: 19.80
-};
+import { toast } from "react-toastify";
 
 const BookPage = () => {
   const { id: bookId } = useParams();
   const { user } = useAuth();
-  const [book, setBook] = useState(sample_book);
+  const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ score: 0, content: '' });
   const [newComments, setNewComments] = useState({})
@@ -46,17 +25,65 @@ const BookPage = () => {
   const [selectedFlag, setSelectedFlag] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchBookData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/v1/book/get-bookId/${bookId}`);
+        setBook(response.data);
+      } catch (error) {
+        console.error("Error fetching book data:", error);
+      }
+    };
+
+    fetchBookData();
+  }, [bookId]);
+
+  useEffect(() => {
+    const fetchBookDiscount = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/discount/get-discount/${bookId}`
+        );
+        const discountData = response.data;
+
+        if (discountData) {
+          const discountPercentage = discountData.discountPercentage || 0;
+
+          setBook((prevBook) => ({
+            ...prevBook,
+            discountPercentage: discountPercentage,
+            finalPrice:
+              parseFloat(prevBook?.price || 0) -
+              (parseFloat(prevBook?.price || 0) * (discountPercentage / 100)),
+          }));
+        } else {
+          setBook((prevBook) => ({
+            ...prevBook,
+            discountPercentage: 0,
+            finalPrice: parseFloat(prevBook?.price || 0),
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching discount data:", error);
+      }
+    };
+
+    if (book) {
+      fetchBookDiscount();
+    }
+  }, [book, bookId]);
 
   useEffect(() => {
     const fetchReviewsWithComments = async () => {
       try {
-        // Fetch reviews
         const reviewsResponse = await axios.get(
           `http://localhost:3000/api/v1/review/get-reviews-book/${bookId}`
         );
         const reviews = reviewsResponse.data || [];
 
-        // Fetch comments for each review
         const reviewsWithComments = await Promise.all(
           reviews.map(async (review) => {
             const commentsResponse = await axios.get(
@@ -70,6 +97,16 @@ const BookPage = () => {
         );
 
         setReviews(reviewsWithComments);
+
+        const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
+        const reviewCount = reviews.length;
+        const averageRating = reviewCount > 0 ? totalScore / reviewCount / 2 : 0;
+
+        setBook((prevBook) => ({
+          ...prevBook,
+          rating: averageRating.toFixed(1),
+          reviewCount: reviewCount,
+        }));
       } catch (error) {
         console.error("Error fetching reviews or comments:", error);
       }
@@ -98,6 +135,28 @@ const BookPage = () => {
 
     fetchCurrentUser();
   }, [user]);
+
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!user) return;
+      try {
+        const token = await getFirebaseToken();
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/wishList/get-items`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const wishlistItems = response.data || [];
+        const inWishlist = wishlistItems.some(
+          (wishlistItem) => wishlistItem.book.id === parseInt(bookId)
+        );
+        setIsInWishlist(inWishlist);
+      } catch (error) {
+        console.error("Error checking wishlist status:", error);
+      }
+    };
+
+    checkWishlistStatus();
+  }, [user, bookId]);
 
   const handleStarHover = (event, star) => {
     const { left, width } = event.target.getBoundingClientRect();
@@ -136,7 +195,10 @@ const BookPage = () => {
     e.preventDefault();
 
     if (!newReview.content) {
-      alert("Please enter a valid review.");
+      toast.error("Please enter a valid review.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
       return;
     }
 
@@ -174,7 +236,10 @@ const BookPage = () => {
     e.preventDefault();
 
     if (!newComments[reviewIndex]) {
-      alert("Please enter a valid comment.");
+      toast.error("Please enter a valid comment.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
       return;
     }
 
@@ -295,196 +360,264 @@ const BookPage = () => {
     setSelectedFlag((prevFlag) => (prevFlag === flag ? null : flag));
   };
 
+  const handleWishlistToggle = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      if (isInWishlist) {
+        await axios.delete(
+          `http://localhost:3000/api/v1/wishList/remove-item/${bookId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success("Book removed from wishlist!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      } else {
+        await axios.post(
+          `http://localhost:3000/api/v1/wishList/add-item/${bookId}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success("Book added to wishlist!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      }
+      setIsInWishlist((prev) => !prev);
+    } catch (error) {
+      console.error("Error toggling wishlist status:", error);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.patch(
+        `http://localhost:3000/api/v1/cart-item/add-item/${bookId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Book added to cart!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error) {
+      console.error("Error adding book to cart:", error);
+
+      toast.error("Failed to add book to cart. Please try again.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    }
+  };
+
   return (
     <div className="main-container">
       <Sidebar />
       <div className="book-page">
-        <div className="book-main-info">
-          <h1 className="book-title">{book.name}</h1>
-          <p className="book-genre">{book.genre}</p>
+        {book ? (
+          <>
+            <div className="book-main-info">
+              <h1 className="book-title">{book.name}</h1>
+              <p className="book-genre">{book.genres.map((genre) => genre.name).join(", ")}</p>
 
-          <div className="book-details">
-            <div>
-              <div className="book-image-placeholder"></div>
-              {/* 
-                <div className="book-image">
-                  <img src={book.image} alt={book.title} />
-                </div> 
-              */}
-              <p className="wishlist"><FaHeart /> Add to Wishlist</p>
-            </div>
-            <div className="book-data">
-              <p><strong>Author</strong>: {book.writer}</p>
-              <p><strong>Publisher</strong>: {book.publisher}</p>
-              <p><strong>Pages</strong>: {book.pageNumber}</p>
-              <p><strong>Language</strong>: {book.language}</p>
-              <p><strong>Publication Year</strong>: {book.datePublished}</p>
-              <p><strong>Dimensions</strong>: {book.bookDimension}</p>
-              <p><strong>Barcode</strong>: {book.barcode}</p>
-              <p><strong>ISBN</strong>: {book.isbn}</p>
-              <p><strong>Edition</strong>: {book.editionNumber}</p>
-              <p> <strong> ★ </strong> {book.rating} ({book.reviewCount} Reviews)</p>
-            </div>
-            <div className="book-flag-container">
-              <p
-                className={`book-flag ${selectedFlag == "haveRead" ? "bold" : ""}`}
-                onClick={() => handleFlagClick("haveRead")}
-              >
-                <IoMdCheckmarkCircleOutline />
-                <span className="text-margin">Have Read</span>
-              </p>
-              <p
-                className={`book-flag ${selectedFlag == "reading" ? "bold" : ""}`}
-                onClick={() => handleFlagClick("reading")}
-              >
-                <IoBookOutline />
-                <span className="text-margin">Reading</span>
-              </p>
-              <p
-                className={`book-flag ${selectedFlag == "willRead" ? "bold" : ""}`}
-                onClick={() => handleFlagClick("willRead")}
-              >
-                <IoMdTime />
-                <span className="text-margin">Will Read</span>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="price">
-          <div className="book-pricing">
-            {book.discountPercentage > 0 ? (
-              <><p className="normal-price"> <del>${(book.normalPrice).toFixed(2)}</del>
-              </p><p className="discount-percentage"> -{book.discountPercentage}% </p></>
-            ) : null}
-            <p className="final-price"> ${(book.finalPrice).toFixed(2)} </p>
-          </div>
-          <button className="cart-btn">Add to Cart</button>
-        </div>
-        <div className="book-description">
-          <p>{book.description}</p>
-        </div>
-        <div className="book-reviews-section">
-          <h2>Reviews</h2>
-          <div className="book-reviews-line"></div>
-          {reviews.map((review, index) => (
-            <div key={review.id} className="review">
-              <div className="book-review-data">
-                <div className="book-review-first">
-                  <h4>{review.user.name}</h4>
-                  <Rating score={review.score} />
+              <div className="book-details">
+                <div>
+                  <div className="book-image">
+                    <img src={`${process.env.PUBLIC_URL}/${book.imagePath}`} alt={book.name} />
+                  </div>
+                  <p
+                    className={`wishlist ${isInWishlist ? "in-wishlist" : ""}`}
+                    onClick={handleWishlistToggle}
+                  >
+                    <FaHeart /> {isInWishlist ? " Remove from Wishlist" : " Add to Wishlist"}
+                  </p>
                 </div>
-                <p className="book-review-second">{review.content}</p>
-                {currentUser && (currentUser.id === review.user.id) && (
-                  <p className="book-review-delete"
-                    onClick={handleDeleteReview}>
-                    <CiCircleRemove />
-                  </p>
-                )
-                }
-                <div className="book-review-third">
+                <div className="book-data">
+                  <p><strong>Author</strong>: <Link to={`/author/${encodeURIComponent(book.writer)}`}>{book.writer}</Link></p>
+                  <p><strong>Publisher</strong>: <Link to={`/publisher/${encodeURIComponent(book.publisher.name)}`}>{book.publisher.name}</Link></p>
+                  <p><strong>Pages</strong>: {book.pageNumber}</p>
+                  <p><strong>Language</strong>: {book.language}</p>
+                  <p><strong>Publication Year</strong>: {book.datePublished}</p>
+                  <p><strong>Dimensions</strong>: {book.bookDimension}</p>
+                  <p><strong>Barcode</strong>: {book.barcode}</p>
+                  <p><strong>ISBN</strong>: {book.isbn}</p>
+                  <p><strong>Edition</strong>: {book.editionNumber}</p>
+                  <p> <strong> ★ </strong> {book.rating} ({book.reviewCount} Reviews)</p>
+                </div>
+                <div className="book-flag-container">
                   <p
-                    className={`book-review-like ${review.userLiked ? 'bold' : ''}`}
-                    onClick={() => handleLikeReview(index)}
+                    className={`book-flag ${selectedFlag == "haveRead" ? "bold" : ""}`}
+                    onClick={() => handleFlagClick("haveRead")}
                   >
-                    <BiLike /> <span className="text-margin">{review.likeCount}</span>
+                    <IoMdCheckmarkCircleOutline />
+                    <span className="text-margin">Have Read</span>
                   </p>
                   <p
-                    className={`book-review-dislike ${review.userDisliked ? 'bold' : ''}`}
-                    onClick={() => handleDislikeReview(index)}
+                    className={`book-flag ${selectedFlag == "reading" ? "bold" : ""}`}
+                    onClick={() => handleFlagClick("reading")}
                   >
-                    <BiDislike /> <span className="text-margin">{review.dislikeCount}</span>
+                    <IoBookOutline />
+                    <span className="text-margin">Reading</span>
                   </p>
-                  <p className="book-review-comment" onClick={() => expandReviews(index, review.id)}>
-                    <FaRegCommentDots /> <span className="text-margin">{review.comments.length}</span>
+                  <p
+                    className={`book-flag ${selectedFlag == "willRead" ? "bold" : ""}`}
+                    onClick={() => handleFlagClick("willRead")}
+                  >
+                    <IoMdTime />
+                    <span className="text-margin">Will Read</span>
                   </p>
                 </div>
               </div>
-              {expandedReviews.includes(index) ? (
-                review.comments && review.comments.length > 0 ? (
-                  <div className="comments-list">
-                    {review.comments.map((comment, commentIndex) => (
-                      <div key={commentIndex} className="comment">
-                        <div className="comment-first"> <h4>{comment.user.name}</h4> </div>
-                        <div className="comment-second"> {comment.content} </div>
-                        <div className="comment-third">
-                          <p
-                            className={`comment-like ${comment.likeCount ? 'bold' : ''}`}
-                            onClick={() => handleLikeComment(index, commentIndex)}
-                          >
-                            <BiLike /> <span className="text-margin">{comment.likeCount}</span>
-                          </p>
-                          <p
-                            className={`comment-dislike ${comment.userDisliked ? 'bold' : ''}`}
-                            onClick={() => handleDislikeComment(index, commentIndex)}
-                          >
-                            <BiDislike /> <span className="text-margin">{comment.dislikeCount}</span>
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>) : (
-                  <div className="no-comment"> No comments available for this review. </div>
-                )
-              ) : null}
-              {expandedReviews.includes(index) && user ? (
-                <form className="add-comment-form" onSubmit={(e) => handleAddComment(e, review.id, index)}>
-                  <div className="add-comment-text">
-                    <textarea
-                      name="content"
-                      value={newComments[index] || ""}
-                      onChange={(e) => handleCommentInputChange(e, index)}
-                      placeholder="Write your comment..."
-                    ></textarea>
+            </div>
+            <div className="price">
+              <div className="book-pricing">
+                {book.discountPercentage > 0 ? (
+                  <><p className="normal-price"> <del>${parseFloat(book.price).toFixed(2)}</del>
+                  </p><p className="discount-percentage"> -{book.discountPercentage}% </p></>
+                ) : null}
+                <p className="final-price"> ${parseFloat(book.finalPrice).toFixed(2)} </p>
+              </div>
+              <button className="cart-btn" onClick={handleAddToCart}>Add to Cart</button>
+            </div>
+            <div className="book-description">
+              <p>{book.description}</p>
+            </div>
+            <div className="book-reviews-section">
+              <h2>Reviews</h2>
+              <div className="book-reviews-line"></div>
+              {reviews.map((review, index) => (
+                <div key={review.id} className="review">
+                  <div className="book-review-data">
+                    <div className="book-review-first">
+                      <h4>{review.user.name}</h4>
+                      <Rating score={review.score} />
+                    </div>
+                    <p className="book-review-second">{review.content}</p>
+                    {currentUser && (currentUser.id === review.user.id) && (
+                      <p className="book-review-delete"
+                        onClick={handleDeleteReview}>
+                        <CiCircleRemove />
+                      </p>
+                    )
+                    }
+                    <div className="book-review-third">
+                      <p
+                        className={`book-review-like ${review.userLiked ? 'bold' : ''}`}
+                        onClick={() => handleLikeReview(index)}
+                      >
+                        <BiLike /> <span className="text-margin">{review.likeCount}</span>
+                      </p>
+                      <p
+                        className={`book-review-dislike ${review.userDisliked ? 'bold' : ''}`}
+                        onClick={() => handleDislikeReview(index)}
+                      >
+                        <BiDislike /> <span className="text-margin">{review.dislikeCount}</span>
+                      </p>
+                      <p className="book-review-comment" onClick={() => expandReviews(index, review.id)}>
+                        <FaRegCommentDots /> <span className="text-margin">{review.comments.length}</span>
+                      </p>
+                    </div>
                   </div>
-                  <div className="add-comment-submit"><button type="submit">Submit Comment</button></div>
-                </form>
-              ) : null}
+                  {expandedReviews.includes(index) ? (
+                    review.comments && review.comments.length > 0 ? (
+                      <div className="comments-list">
+                        {review.comments.map((comment, commentIndex) => (
+                          <div key={commentIndex} className="comment">
+                            <div className="comment-first"> <h4>{comment.user.name}</h4> </div>
+                            <div className="comment-second"> {comment.content} </div>
+                            <div className="comment-third">
+                              <p
+                                className={`comment-like ${comment.likeCount ? 'bold' : ''}`}
+                                onClick={() => handleLikeComment(index, commentIndex)}
+                              >
+                                <BiLike /> <span className="text-margin">{comment.likeCount}</span>
+                              </p>
+                              <p
+                                className={`comment-dislike ${comment.userDisliked ? 'bold' : ''}`}
+                                onClick={() => handleDislikeComment(index, commentIndex)}
+                              >
+                                <BiDislike /> <span className="text-margin">{comment.dislikeCount}</span>
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>) : (
+                      <div className="no-comment"> No comments available for this review. </div>
+                    )
+                  ) : null}
+                  {expandedReviews.includes(index) && user ? (
+                    <form className="add-comment-form" onSubmit={(e) => handleAddComment(e, review.id, index)}>
+                      <div className="add-comment-text">
+                        <textarea
+                          name="content"
+                          value={newComments[index] || ""}
+                          onChange={(e) => handleCommentInputChange(e, index)}
+                          placeholder="Write your comment..."
+                        ></textarea>
+                      </div>
+                      <div className="add-comment-submit"><button type="submit">Submit Comment</button></div>
+                    </form>
+                  ) : null}
+                </div>
+              ))}
+              {user && (<form className="add-book-review-form" onSubmit={handleAddReview}>
+                <div className="add-book-review-first">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const halfStarValue = star * 2 - 1;
+                    const fullStarValue = star * 2;
+                    return (
+                      <span
+                        key={star}
+                        className="star-container"
+                        onMouseMove={(event) => handleStarHover(event, star)}
+                        onClick={(event) => handleStarClick(event, star)}
+                        onMouseLeave={() => setHoveredStars(0)}
+                      >
+                        <span
+                          className={`star half ${hoveredStars >= halfStarValue || newReview.score >= halfStarValue
+                            ? 'filled'
+                            : 'empty'
+                            }`}
+                        >
+                          ★
+                        </span>
+                        <span
+                          className={`star full ${hoveredStars >= fullStarValue || newReview.score >= fullStarValue
+                            ? 'filled'
+                            : 'empty'
+                            }`}
+                        >
+                          ★
+                        </span>
+                      </span>
+                    );
+                  })}
+                </div>
+                <div className="add-book-review-second">
+                  <textarea
+                    name="content"
+                    value={newReview.content}
+                    onChange={handleInputChange}
+                    placeholder="Write your review..."
+                  ></textarea>
+                </div>
+                <div className="add-book-review-third"><button type="submit">Submit Review</button></div>
+              </form>)}
             </div>
-          ))}
-          {user && (<form className="add-book-review-form" onSubmit={handleAddReview}>
-            <div className="add-book-review-first">
-              {[1, 2, 3, 4, 5].map((star) => {
-                const halfStarValue = star * 2 - 1;
-                const fullStarValue = star * 2;
-                return (
-                  <span
-                    key={star}
-                    className="star-container"
-                    onMouseMove={(event) => handleStarHover(event, star)}
-                    onClick={(event) => handleStarClick(event, star)}
-                    onMouseLeave={() => setHoveredStars(0)}
-                  >
-                    <span
-                      className={`star half ${hoveredStars >= halfStarValue || newReview.score >= halfStarValue
-                        ? 'filled'
-                        : 'empty'
-                        }`}
-                    >
-                      ★
-                    </span>
-                    <span
-                      className={`star full ${hoveredStars >= fullStarValue || newReview.score >= fullStarValue
-                        ? 'filled'
-                        : 'empty'
-                        }`}
-                    >
-                      ★
-                    </span>
-                  </span>
-                );
-              })}
-            </div>
-            <div className="add-book-review-second">
-              <textarea
-                name="content"
-                value={newReview.content}
-                onChange={handleInputChange}
-                placeholder="Write your review..."
-              ></textarea>
-            </div>
-            <div className="add-book-review-third"><button type="submit">Submit Review</button></div>
-          </form>)}
-        </div>
+          </>
+        ) : (
+          <p>Loading book details...</p>
+        )}
       </div>
     </div>
   );

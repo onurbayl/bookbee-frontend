@@ -14,64 +14,64 @@ const ShoppingCartPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          try {
-            const token = await getFirebaseToken();
-    
-            const cartResponse = await axios.get("http://localhost:3000/api/v1/cart-item/get-items", {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const sortedCartItems = cartResponse.data.sort((a, b) => a.id - b.id);
-            setCartItems(sortedCartItems);
-    
-            const couponResponse = await axios.get("http://localhost:3000/api/v1/coupon/get-coupons", {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            setCoupons(couponResponse.data);
-          } catch (error) {
-            console.error("Error fetching cart data:", error);
-          }
+            try {
+                const token = await getFirebaseToken();
+
+                const cartResponse = await axios.get("http://localhost:3000/api/v1/cart-item/get-items", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const sortedCartItems = cartResponse.data.sort((a, b) => a.id - b.id);
+                setCartItems(sortedCartItems);
+
+                const couponResponse = await axios.get("http://localhost:3000/api/v1/coupon/get-coupons", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setCoupons(couponResponse.data);
+            } catch (error) {
+                console.error("Error fetching cart data:", error);
+            }
         };
-    
+
         fetchData();
-      }, [refresh]);
+    }, [refresh]);
 
     const handleIncreaseQuantity = async (bookId) => {
         try {
-          const token = await getFirebaseToken();
-          await axios.patch(`http://localhost:3000/api/v1/cart-item/add-item/${bookId}`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+            const token = await getFirebaseToken();
+            await axios.patch(`http://localhost:3000/api/v1/cart-item/add-item/${bookId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-          setCartItems((prevItems) =>
-            prevItems.map((item) =>
-              item.book.id === bookId ? { ...item, quantity: item.quantity + 1 } : item
-            )
-          );
-          setRefresh((prev) => !prev);
+            setCartItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.book.id === bookId ? { ...item, quantity: item.quantity + 1 } : item
+                )
+            );
+            setRefresh((prev) => !prev);
         } catch (error) {
-          console.error("Error increasing item quantity:", error);
+            console.error("Error increasing item quantity:", error);
         }
-      };
+    };
 
     const handleDecreaseQuantity = async (bookId) => {
         try {
-          const token = await getFirebaseToken();
-          await axios.patch(`http://localhost:3000/api/v1/cart-item/remove-item/${bookId}`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+            const token = await getFirebaseToken();
+            await axios.patch(`http://localhost:3000/api/v1/cart-item/remove-item/${bookId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-          setCartItems((prevItems) =>
-            prevItems
-              .map((item) =>
-                item.book.id === bookId ? { ...item, quantity: item.quantity - 1 } : item
-              )
-              .filter((item) => item.quantity > 0)
-          );
-          setRefresh((prev) => !prev);
+            setCartItems((prevItems) =>
+                prevItems
+                    .map((item) =>
+                        item.book.id === bookId ? { ...item, quantity: item.quantity - 1 } : item
+                    )
+                    .filter((item) => item.quantity > 0)
+            );
+            setRefresh((prev) => !prev);
         } catch (error) {
-          console.error("Error decreasing item quantity:", error);
+            console.error("Error decreasing item quantity:", error);
         }
-      };
+    };
 
     const originalTotalPrice = cartItems.reduce(
         (sum, item) => sum + item.finalPrice,
@@ -101,7 +101,9 @@ const ShoppingCartPage = () => {
                 <div className="cart-items">
                     {cartItems.map((item) => (
                         <div key={item.id} className="cart-item">
-                            <div className="placeholder-image"></div>
+                            <div className="item-image">
+                                <img src={`${process.env.PUBLIC_URL}/${item.book.imagePath}`} alt={item.book.name} />
+                            </div>
                             <div className="item-details">
                                 <h2 className="item-title">{item.book.name}</h2>
                                 <p className="item-author">{item.book.writer}</p>

@@ -16,11 +16,11 @@
     cursor: pointer;
 }
 
-.search-book-placeholder-image {
-    width: 140px;
-    height: 160px;
-    background-color: #C4C4C4;
-    border-radius: 4px;
+.search-book-image img {
+    height: auto; 
+    width: auto; 
+    max-width: 140px; 
+    max-height: 160px;
     margin-left: 20px;
 }
 
