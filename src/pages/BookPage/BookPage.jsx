@@ -29,6 +29,27 @@ const BookPage = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const token = await getFirebaseToken();
+
+        const userResponse = await axios.get(
+          `http://localhost:3000/api/v1/user/bytoken`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setCurrentUser(userResponse.data);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [user]);
+
+  useEffect(() => {
     const fetchBookData = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/v1/book/get-bookId/${bookId}`);
@@ -71,23 +92,46 @@ const BookPage = () => {
       }
     };
 
-    if (book) {
+    if (bookId) {
       fetchBookDiscount();
     }
-  }, [book, bookId]);
+  }, [bookId]);
+
+  useEffect(() => {
+    const fetchReadStatus = async () => {
+      if (!currentUser)
+        return;
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/readStatus/get-readStatus/${currentUser.id}`
+        );
+        const readStatus = response.data.find((status) => status.bookId === parseInt(bookId, 10));
+        if (readStatus) {
+          setSelectedFlag(readStatus.status);
+        }
+      } catch (error) {
+        console.error("Error fetching read status:", error);
+      }
+    };
+
+    fetchReadStatus();
+  }, [currentUser, bookId]);
 
   useEffect(() => {
     const fetchReviewsWithComments = async () => {
       try {
+        const token = user ? await getFirebaseToken() : null;
         const reviewsResponse = await axios.get(
-          `http://localhost:3000/api/v1/review/get-reviews-book/${bookId}`
+          `http://localhost:3000/api/v1/review/get-reviews-book/${bookId}`,
+          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
         const reviews = reviewsResponse.data || [];
-
+        console.log(reviewsResponse.data);
         const reviewsWithComments = await Promise.all(
-          reviews.map(async (review) => {
+          reviews?.map(async (review) => {
             const commentsResponse = await axios.get(
-              `http://localhost:3000/api/v1/comment/get-comments-by-review/${review.id}`
+              `http://localhost:3000/api/v1/comment/get-comments-by-review/${review.id}`,
+              token ? { headers: { Authorization: `Bearer ${token}` } } : {}
             );
             return {
               ...review,
@@ -95,7 +139,7 @@ const BookPage = () => {
             };
           })
         );
-
+        console.log(reviewsWithComments);
         setReviews(reviewsWithComments);
 
         const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
@@ -114,27 +158,6 @@ const BookPage = () => {
 
     fetchReviewsWithComments();
   }, [bookId, refresh]);
-
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      if (!user) {
-        return;
-      }
-      try {
-        const token = await getFirebaseToken();
-
-        const userResponse = await axios.get(
-          `http://localhost:3000/api/v1/user/bytoken`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setCurrentUser(userResponse.data);
-      } catch (error) {
-        console.error("Error fetching current user:", error);
-      }
-    };
-
-    fetchCurrentUser();
-  }, [user]);
 
   useEffect(() => {
     const checkWishlistStatus = async () => {
@@ -270,94 +293,94 @@ const BookPage = () => {
     }
   };
 
-  const handleLikeReview = (reviewIndex) => {
-    setReviews((prevReviews) => {
-      const updatedReviews = prevReviews.reviews.map((review, index) =>
-        index === reviewIndex
-          ? {
-            ...review,
-            likes: review.likes + (review.userLiked ? -1 : 1),
-            userLiked: !review.userLiked,
-            dislikes: review.userDisliked ? review.dislikes - 1 : review.dislikes,
-            userDisliked: false,
-          }
-          : review
+  const handleLikeReview = async (reviewId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/review-like/add-like/${reviewId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      return { ...prevReviews, reviews: updatedReviews };
-    });
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      console.error("Error liking review:", error);
+    }
   };
 
-  const handleDislikeReview = (reviewIndex) => {
-    setReviews((prevReviews) => {
-      const updatedReviews = prevReviews.reviews.map((review, index) =>
-        index === reviewIndex
-          ? {
-            ...review,
-            dislikes: review.dislikes + (review.userDisliked ? -1 : 1),
-            userDisliked: !review.userDisliked,
-            likes: review.userLiked ? review.likes - 1 : review.likes,
-            userLiked: false,
-          }
-          : review
+  const handleDislikeReview = async (reviewId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/review-like/add-dislike/${reviewId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      return { ...prevReviews, reviews: updatedReviews };
-    });
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      console.error("Error disliking review:", error);
+    }
   };
 
-  const handleLikeComment = (reviewIndex, commentIndex) => {
-    setReviews((prevReviews) => {
-      const updatedReviews = prevReviews.reviews.map((review, index) =>
-        index === reviewIndex
-          ? {
-            ...review,
-            comments: review.comments.map((comment, cIndex) =>
-              cIndex === commentIndex
-                ? {
-                  ...comment,
-                  likes: comment.likes + (comment.userLiked ? -1 : 1),
-                  userLiked: !comment.userLiked,
-                  dislikes: comment.userDisliked ? comment.dislikes - 1 : comment.dislikes,
-                  userDisliked: false,
-                }
-                : comment
-            ),
-          }
-          : review
+  const handleLikeComment = async (commentId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/comment-like/add-like/${commentId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      return { ...prevReviews, reviews: updatedReviews };
-    });
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      console.error("Error liking comment:", error);
+    }
   };
 
-  const handleDislikeComment = (reviewIndex, commentIndex) => {
-    setReviews((prevReviews) => {
-      const updatedReviews = prevReviews.reviews.map((review, index) =>
-        index === reviewIndex
-          ? {
-            ...review,
-            comments: review.comments.map((comment, cIndex) =>
-              cIndex === commentIndex
-                ? {
-                  ...comment,
-                  dislikes: comment.dislikes + (comment.userDisliked ? -1 : 1),
-                  userDisliked: !comment.userDisliked,
-                  likes: comment.userLiked ? comment.likes - 1 : comment.likes,
-                  userLiked: false,
-                }
-                : comment
-            ),
-          }
-          : review
+  const handleDislikeComment = async (commentId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/comment-like/add-dislike/${commentId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      return { ...prevReviews, reviews: updatedReviews };
-    });
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      console.error("Error disliking comment:", error);
+    }
   };
 
-  const handleFlagClick = (flag) => {
-    setSelectedFlag((prevFlag) => (prevFlag === flag ? null : flag));
+  const handleFlagClick = async (flag) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `http://localhost:3000/api/v1/readStatus/set-readStatus/${bookId}/status/${flag}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSelectedFlag(flag);
+    } catch (error) {
+      console.error("Error setting read status:", error);
+    }
   };
 
   const handleWishlistToggle = async () => {
@@ -428,7 +451,7 @@ const BookPage = () => {
           <>
             <div className="book-main-info">
               <h1 className="book-title">{book.name}</h1>
-              <p className="book-genre">{book.genres.map((genre) => genre.name).join(", ")}</p>
+              <p className="book-genre">{book.genres?.map((genre) => genre.name).join(", ")}</p>
 
               <div className="book-details">
                 <div>
@@ -456,22 +479,22 @@ const BookPage = () => {
                 </div>
                 <div className="book-flag-container">
                   <p
-                    className={`book-flag ${selectedFlag == "haveRead" ? "bold" : ""}`}
-                    onClick={() => handleFlagClick("haveRead")}
+                    className={`book-flag ${selectedFlag == 0 ? "bold" : ""}`}
+                    onClick={() => handleFlagClick(0)}
                   >
                     <IoMdCheckmarkCircleOutline />
                     <span className="text-margin">Have Read</span>
                   </p>
                   <p
-                    className={`book-flag ${selectedFlag == "reading" ? "bold" : ""}`}
-                    onClick={() => handleFlagClick("reading")}
+                    className={`book-flag ${selectedFlag == 1 ? "bold" : ""}`}
+                    onClick={() => handleFlagClick(1)}
                   >
                     <IoBookOutline />
                     <span className="text-margin">Reading</span>
                   </p>
                   <p
-                    className={`book-flag ${selectedFlag == "willRead" ? "bold" : ""}`}
-                    onClick={() => handleFlagClick("willRead")}
+                    className={`book-flag ${selectedFlag == 2 ? "bold" : ""}`}
+                    onClick={() => handleFlagClick(2)}
                   >
                     <IoMdTime />
                     <span className="text-margin">Will Read</span>
@@ -495,7 +518,7 @@ const BookPage = () => {
             <div className="book-reviews-section">
               <h2>Reviews</h2>
               <div className="book-reviews-line"></div>
-              {reviews.map((review, index) => (
+              {reviews?.map((review, index) => (
                 <div key={review.id} className="review">
                   <div className="book-review-data">
                     <div className="book-review-first">
@@ -512,14 +535,14 @@ const BookPage = () => {
                     }
                     <div className="book-review-third">
                       <p
-                        className={`book-review-like ${review.userLiked ? 'bold' : ''}`}
-                        onClick={() => handleLikeReview(index)}
+                        className={`book-review-like ${review.userChoice === 1 ? 'bold' : ''}`}
+                        onClick={() => handleLikeReview(review.id)}
                       >
                         <BiLike /> <span className="text-margin">{review.likeCount}</span>
                       </p>
                       <p
-                        className={`book-review-dislike ${review.userDisliked ? 'bold' : ''}`}
-                        onClick={() => handleDislikeReview(index)}
+                        className={`book-review-dislike ${review.userChoice === -1 ? 'bold' : ''}`}
+                        onClick={() => handleDislikeReview(review.id)}
                       >
                         <BiDislike /> <span className="text-margin">{review.dislikeCount}</span>
                       </p>
@@ -531,20 +554,20 @@ const BookPage = () => {
                   {expandedReviews.includes(index) ? (
                     review.comments && review.comments.length > 0 ? (
                       <div className="comments-list">
-                        {review.comments.map((comment, commentIndex) => (
+                        {review.comments?.map((comment, commentIndex) => (
                           <div key={commentIndex} className="comment">
                             <div className="comment-first"> <h4>{comment.user.name}</h4> </div>
                             <div className="comment-second"> {comment.content} </div>
                             <div className="comment-third">
                               <p
-                                className={`comment-like ${comment.likeCount ? 'bold' : ''}`}
-                                onClick={() => handleLikeComment(index, commentIndex)}
+                                className={`comment-like ${comment.userChoice === 1 ? 'bold' : ''}`}
+                                onClick={() => handleLikeComment(comment.id)}
                               >
                                 <BiLike /> <span className="text-margin">{comment.likeCount}</span>
                               </p>
                               <p
-                                className={`comment-dislike ${comment.userDisliked ? 'bold' : ''}`}
-                                onClick={() => handleDislikeComment(index, commentIndex)}
+                                className={`comment-dislike ${comment.userChoice === -1 ? 'bold' : ''}`}
+                                onClick={() => handleDislikeComment(comment.id)}
                               >
                                 <BiDislike /> <span className="text-margin">{comment.dislikeCount}</span>
                               </p>
