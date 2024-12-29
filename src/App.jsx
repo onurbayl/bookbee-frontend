@@ -77,8 +77,9 @@ const App = () => {
             </Route>
             <Route path="/search" element={<SearchFilterPage />} />
             <Route path="/author/:id" element={<AuthorPage />} />
-            <Route path="/publisher/:id" element={<PublisherPage />} />
-            <Route path="/publisher-panel" element={<PublisherPanel />} />
+            <Route path="/publisher/:id" element={<PublisherPage />} /><Route path="/publisher-panel" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+              <Route index element={<PublisherPanel />} />
+            </Route>
           </Routes>
         </Router>
       </SearchProvider>

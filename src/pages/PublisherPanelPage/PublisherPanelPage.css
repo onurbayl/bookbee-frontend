@@ -107,3 +107,34 @@
     margin-left: 10px;
     color: #555;
 }
+
+
+.search-btn {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #767676;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #CAB295;
+    font-size: 18px;
+    color: #FAFAFA;
+    cursor: pointer;
+    margin-left: 0px;
+    margin-bottom: 20px;
+  }
+  
+  .search-btn:hover {
+    background-color: #b99971;
+  }
+
+  .upload-btn {
+    background-color: limegreen;
+  }
+
+  .delete-btn {
+    background-color: crimson;
+  }
+
+  .update-btn {
+    background-color: goldenrod;
+  }

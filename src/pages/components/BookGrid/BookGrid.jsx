@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./BookGrid.css";
 import { GrPrevious, GrNext } from "react-icons/gr";
 
-const BookGrid = ({ books }) => {
+const BookGrid = ({ books, enableEdit=false }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const booksPerPage = 10;
 
@@ -46,6 +46,9 @@ const BookGrid = ({ books }) => {
                         <p>Edition {book.editionNumber}</p>
                     </div>
                     <div className="search-book-price">
+                        {enableEdit ? (
+                            <Link to={"/update-book"}><button className="search-btn update-btn">Edit</button></Link>
+                        ) : null}
                         {book.discountPercentage > 0 ? (
                             <>
                                 <div className="search-book-normal-price">
