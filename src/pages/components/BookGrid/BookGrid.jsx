@@ -33,7 +33,7 @@ const BookGrid = ({ books, enableEdit=false }) => {
                             <p className="search-book-publisher">{book.publisher.name}</p>
                         </div>
                         <div className="search-book-details-second">
-                            <p className="search-book-rating">★ {book.rating.toFixed(1)}</p>
+                            <p className="search-book-rating">★ {(book.averageReviewScore / 2).toFixed(1)}</p>
                         </div>
                     </div>
                     <div className="other-book-info">
