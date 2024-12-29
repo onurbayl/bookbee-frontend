@@ -17,7 +17,7 @@ const BookList = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/v1/genre/get-all-genres");
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
         const genresData = response.data;
         setAllGenres(genresData.map(genre => genre.name));
       } catch (error) {
@@ -32,7 +32,7 @@ const BookList = () => {
     const fetchBooksAndDetails = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:3000/api/v1/book/get-all-books");
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
         const booksData = response.data;
 
         const booksWithDetails = await Promise.all(
@@ -42,7 +42,7 @@ const BookList = () => {
 
             try {
               const discountResponse = await axios.get(
-                `http://localhost:3000/api/v1/discount/get-discount/${book.id}`
+                `${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${book.id}`
               );
               if (discountResponse.data) {
                 discountPercentage = discountResponse.data.discountPercentage || 0;
@@ -59,7 +59,7 @@ const BookList = () => {
 
             try {
               const reviewsResponse = await axios.get(
-                `http://localhost:3000/api/v1/review/get-reviews-book/${book.id}`
+                `${process.env.REACT_APP_API_BASE_URL}/review/get-reviews-book/${book.id}`
               );
               const reviews = reviewsResponse.data || [];
               reviewCount = reviews.length;
@@ -89,7 +89,7 @@ const BookList = () => {
         if (user) {
           const token = await getFirebaseToken();
           const userResponse = await axios.get(
-            `http://localhost:3000/api/v1/user/bytoken`,
+            `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const favoriteGenres = userResponse.data.favoriteGenres.map(genre => genre.name);

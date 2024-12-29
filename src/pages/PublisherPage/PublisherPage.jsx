@@ -18,7 +18,7 @@ const PublisherPage = () => {
         const fetchBooksByPublisher = async () => {
             setLoading(true);
             try {
-                const booksResponse = await axios.get("http://localhost:3000/api/v1/book/get-all-books");
+                const booksResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
                 const books = booksResponse.data || [];
 
                 const decodedPublisherName = decodeURIComponent(id);
@@ -35,7 +35,7 @@ const PublisherPage = () => {
 
                         try {
                             const discountResponse = await axios.get(
-                                `http://localhost:3000/api/v1/discount/get-discount/${book.id}`
+                                `${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${book.id}`
                             );
                             if (discountResponse.data) {
                                 discountPercentage = discountResponse.data.discountPercentage || 0;
@@ -49,7 +49,7 @@ const PublisherPage = () => {
 
                         try {
                             const reviewsResponse = await axios.get(
-                                `http://localhost:3000/api/v1/review/get-reviews-book/${book.id}`
+                                `${process.env.REACT_APP_API_BASE_URL}/review/get-reviews-book/${book.id}`
                             );
                             const reviews = reviewsResponse.data || [];
                             reviewCount = reviews.length;

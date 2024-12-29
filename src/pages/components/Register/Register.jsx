@@ -55,7 +55,7 @@ function Register() {
 
 
       const requestBody = { name, email, description, uid: crnUser.uid, favoriteGenres: selectedGenreIds }
-      const response = await axios.post("http://127.0.0.1:3000/api/v1/user/create", requestBody)
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/create`, requestBody)
       console.log("Create user in database response: ", response.data)
       //setNewAccountCreationPending(false);
 

@@ -21,7 +21,7 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/genre/get-all-genres');
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
         const sortedGenres = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setGenres(sortedGenres);
         setLoading(false);

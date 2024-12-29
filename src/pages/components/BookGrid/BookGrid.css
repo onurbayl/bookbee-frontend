@@ -17,9 +17,9 @@
 }
 
 .search-book-image img {
-    height: auto; 
-    width: auto; 
-    max-width: 140px; 
+    height: auto;
+    width: auto;
+    max-width: 140px;
     max-height: 160px;
     margin-left: 20px;
 }
@@ -91,4 +91,31 @@
 .no-found {
     margin-left: 10px;
     color: #555;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 50px;    
+}
+
+.pagination-button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 500px;
+    cursor: pointer;
+    color: #555;
+}
+
+.pagination-button.active {
+    font-weight: bold;
+    background-color: #CAB295;
+    color: #fff;
+}
+
+.pagination-button:disabled {
+    background-color: #CCC;
+    cursor: not-allowed;
 }

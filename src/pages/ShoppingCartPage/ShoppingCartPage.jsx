@@ -1,29 +1,32 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ShoppingCartPage.css";
 import { FiShoppingCart } from "react-icons/fi";
 import { TbCirclePlus, TbCircleMinus } from "react-icons/tb";
 import { MdOutlineDiscount } from "react-icons/md";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ShoppingCartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [coupons, setCoupons] = useState([]);
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [refresh, setRefresh] = useState(false);
+    const navigate = useNavigate()    
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = await getFirebaseToken();
 
-                const cartResponse = await axios.get("http://localhost:3000/api/v1/cart-item/get-items", {
+                const cartResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/cart-item/get-items`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const sortedCartItems = cartResponse.data.sort((a, b) => a.id - b.id);
                 setCartItems(sortedCartItems);
 
-                const couponResponse = await axios.get("http://localhost:3000/api/v1/coupon/get-coupons", {
+                const couponResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/coupon/get-coupons`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCoupons(couponResponse.data);
@@ -38,7 +41,7 @@ const ShoppingCartPage = () => {
     const handleIncreaseQuantity = async (bookId) => {
         try {
             const token = await getFirebaseToken();
-            await axios.patch(`http://localhost:3000/api/v1/cart-item/add-item/${bookId}`, {}, {
+            await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/cart-item/add-item/${bookId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -56,7 +59,7 @@ const ShoppingCartPage = () => {
     const handleDecreaseQuantity = async (bookId) => {
         try {
             const token = await getFirebaseToken();
-            await axios.patch(`http://localhost:3000/api/v1/cart-item/remove-item/${bookId}`, {}, {
+            await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/cart-item/remove-item/${bookId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -88,6 +91,35 @@ const ShoppingCartPage = () => {
         }
         else {
             setSelectedCoupon(coupon);
+        }
+    };
+
+    const handleCompletePurchase = async () => {
+        try {
+            const token = await getFirebaseToken();
+            const requestBody = {
+                couponId: selectedCoupon?.id || null,
+            };
+            await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL}/order/complete-purchase`,
+                requestBody,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );    
+            toast.success("Purchase completed successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });    
+            navigate("/user");
+            return;
+        } catch (error) {
+            console.error("Error completing purchase:", error);
+    
+            toast.error("Failed to complete purchase. Please try again.", {
+                position: "top-right",
+                autoClose: 2000,
+            });
         }
     };
 
@@ -168,7 +200,7 @@ const ShoppingCartPage = () => {
                     </div>
                 </div>
                     <div className="pay-now">
-                        <button className="pay-btn">Pay Now </button>
+                        <button className="pay-btn" onClick={handleCompletePurchase}>Pay Now</button>
                     </div>
                 </>
             )}

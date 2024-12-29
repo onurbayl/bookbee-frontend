@@ -125,7 +125,7 @@ const PublisherPanel = () => {
             try {
                 // Fetch published books
                 const booksPublished = await axios.get(
-                    `http://localhost:3000/api/v1/book/get-published-books`
+                    `${process.env.REACT_APP_API_BASE_URL}/book/get-published-books`
                 ).data || [];
 
                 setPublishedBooks(booksPublished);
@@ -138,7 +138,7 @@ const PublisherPanel = () => {
         const fetchOrdersDataByTime = async () => {
             try {
                 const orderData = await axios.get(
-                    `http://localhost:3000/api/v1/order-item/get-book-data/${book.id}?span="days"&N=15`
+                    `${process.env.REACT_APP_API_BASE_URL}/order-item/get-book-data/${book.id}?span="days"&N=15`
                 ).data || [];
 
                 setOrdersByTime(orderData);

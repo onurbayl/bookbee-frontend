@@ -32,7 +32,7 @@ const App = () => {
       console.log(crntUser)
       if (crntUser) {
         const token = await crntUser.getIdToken(); // Await the token
-        const userData = await axios.get("http://localhost:3000/api/v1/user/bytoken", {
+        const userData = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/bytoken`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
