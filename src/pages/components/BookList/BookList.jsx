@@ -9,11 +9,34 @@ const BookList = () => {
   const { user } = useAuth();
   const [allGenres, setAllGenres] = useState([]);
   const [topRatedBooks, setTopRatedBooks] = useState([]);
-  const [bestSellerBooks, setBestSellerBooks] = useState([]);
-  const [mostInterestedBooks, setMostInterestedBooks] = useState([]);  
-  const [mostInterestedGenre, setMostInterestedGenre] = useState("");  
+  const [topRatedGenreBooks, setTopRatedGenreBooks] = useState([]);
+  const [mostInterestedBooks, setMostInterestedBooks] = useState([]);
+  const [topRatedGenre, setTopRatedGenre] = useState("");
+  const [mostInterestedGenre, setMostInterestedGenre] = useState("");
   const [loading, setLoading] = useState(true);
-  
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const token = await getFirebaseToken();
+
+        const userResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setCurrentUser(userResponse.data);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [user]);
+
   useEffect(() => {
     const fetchGenres = async () => {
       try {
@@ -32,109 +55,61 @@ const BookList = () => {
     const fetchBooksAndDetails = async () => {
       setLoading(true);
       try {
+        console.log("abc", currentUser);
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
         const booksData = response.data;
 
-        const booksWithDetails = await Promise.all(
-          booksData.map(async (book) => {
-            let discountPercentage = 0;
-            let finalPrice = parseFloat(book.price);
+        setTopRatedBooks(booksData.slice(0, 8));
 
-            try {
-              const discountResponse = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${book.id}`
-              );
-              if (discountResponse.data) {
-                discountPercentage = discountResponse.data.discountPercentage || 0;
-                finalPrice =
-                  parseFloat(book.price) -
-                  parseFloat(book.price) * (discountPercentage / 100);
-              }
-            } catch (error) {
-              console.error(`Error fetching discount for book ID ${book.id}:`, error);
-            }
-
-            let rating = 0;
-            let reviewCount = 0;
-
-            try {
-              const reviewsResponse = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/review/get-reviews-book/${book.id}`
-              );
-              const reviews = reviewsResponse.data || [];
-              reviewCount = reviews.length;
-
-              const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
-              rating = reviewCount > 0 ? totalScore / reviewCount / 2 : 0;
-            } catch (error) {
-              console.error(`Error fetching reviews for book ID ${book.id}:`, error);
-            }
-
-            return {
-              ...book,
-              discountPercentage,
-              finalPrice,
-              rating: parseFloat(rating),
-              reviewCount,
-            };
-          })
+        const selectedGenreForTopRated = allGenres[Math.floor(Math.random() * allGenres.length)];
+        setTopRatedGenre(selectedGenreForTopRated);
+        const genreBooksTopRated = booksData.filter(book =>
+          book.genres.some(genre => genre.name === selectedGenreForTopRated)
         );
+        setTopRatedGenreBooks(genreBooksTopRated.slice(0, 8));
 
-        const sortedBooks = booksWithDetails.sort((a, b) => b.rating - a.rating);
-        setTopRatedBooks(sortedBooks.slice(0, 8));
+        const availableGenres = currentUser?.favoriteGenres?.length > 1
+          ? currentUser.favoriteGenres.filter(genre => genre.name !== selectedGenreForTopRated).map(genre => genre.name)
+          : allGenres.filter(genre => genre !== selectedGenreForTopRated);
+        const selectedGenreForMostInterested = availableGenres.length > 0
+          ? availableGenres[Math.floor(Math.random() * availableGenres.length)]
+          : selectedGenreForTopRated;
+        setMostInterestedGenre(selectedGenreForMostInterested);
 
-        const randomBestSellerBooks = booksWithDetails.sort(() => 0.5 - Math.random()).slice(0, 8);
-        setBestSellerBooks(randomBestSellerBooks);
+        const genreBooksMostInterested = booksData.filter(book =>
+          book.genres.some(genre => genre.name === selectedGenreForMostInterested)
+        );
+        setMostInterestedBooks(genreBooksMostInterested.slice(0, 8));
 
-        if (user) {
-          const token = await getFirebaseToken();
-          const userResponse = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          const favoriteGenres = userResponse.data.favoriteGenres.map(genre => genre.name);
-          if (favoriteGenres.length > 0) {
-            const randomGenre = favoriteGenres[Math.floor(Math.random() * favoriteGenres.length)];
-            setMostInterestedGenre(randomGenre);
-            const genreBooks = booksWithDetails.filter(book => book.genres.some(genre => genre.name === randomGenre));
-            setMostInterestedBooks(genreBooks.sort(() => 0.5 - Math.random()).slice(0, 8));
-          } else {
-            const randomGenre = allGenres[Math.floor(Math.random() * allGenres.length)];
-            setMostInterestedGenre(randomGenre);
-            const genreBooks = booksWithDetails.filter(book => book.genres.some(genre => genre.name === randomGenre));
-            setMostInterestedBooks(genreBooks.sort(() => 0.5 - Math.random()).slice(0, 8));
-          }
-        }
       } catch (error) {
-        console.error("Error fetching books, discounts or ratings:", error);
+        console.error("Error fetching books:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBooksAndDetails();
-  }, []);
+  }, [currentUser, allGenres]);
 
-  
   return (
     <div className="book-list">
       {loading ? <p>Loading...</p> : (
         <>
-          {user && (
-          <><h2>Most Interested {mostInterestedGenre} Books</h2><div className="books-container">
-              {mostInterestedBooks.map((book, index) => (
-                <BookCard key={index} book={book} />
-              ))}
-            </div></>)}        
-          <h2>Top Rated Books</h2>
+          <h2>Top Rated {topRatedGenre} Books</h2>
           <div className="books-container">
-            {topRatedBooks.map((book, index) => (
+            {topRatedGenreBooks.map((book, index) => (
               <BookCard key={index} book={book} />
             ))}
           </div>
-          <h2>Best Seller Books</h2>
+          <h2>Most Wished For {mostInterestedGenre} Books</h2>
           <div className="books-container">
-            {bestSellerBooks.map((book, index) => (
+            {mostInterestedBooks.map((book, index) => (
+              <BookCard key={index} book={book} />
+            ))}
+          </div>
+          <h2>Top Rated Books</h2>
+          <div className="books-container">
+            {topRatedBooks.map((book, index) => (
               <BookCard key={index} book={book} />
             ))}
           </div>

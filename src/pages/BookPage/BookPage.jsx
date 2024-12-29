@@ -26,6 +26,7 @@ const BookPage = () => {
   const [refresh, setRefresh] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isInWishlist, setIsInWishlist] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -56,6 +57,8 @@ const BookPage = () => {
         setBook(response.data);
       } catch (error) {
         console.error("Error fetching book data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -126,7 +129,7 @@ const BookPage = () => {
           token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
         const reviews = reviewsResponse.data || [];
-        
+
         const reviewsWithComments = await Promise.all(
           reviews?.map(async (review) => {
             const commentsResponse = await axios.get(
@@ -446,7 +449,7 @@ const BookPage = () => {
     <div className="main-container">
       <Sidebar />
       <div className="book-page">
-        {book ? (
+        {!loading ? (
           <>
             <div className="book-main-info">
               <h1 className="book-title">{book.name}</h1>

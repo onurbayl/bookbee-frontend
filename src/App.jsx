@@ -16,6 +16,8 @@ import PublisherPage from "./pages/PublisherPage/PublisherPage";
 import PublisherPanel from './pages/PublisherPanelPage/PublisherPanelPage';
 import UserPastOrdersPage from "./pages/components/UserPastOrdersPage/UserPastOrdersPage";
 import PastActivity from "./pages/components/PastActivity/PastActivity";
+import TopRatedPage from "./pages/TopRatedPage/TopRatedPage";
+import MostWishedForPage from "./pages/MostWishedForPage/MostWishedForPage";
 import { useAuth } from './AuthContext';
 import { useEffect } from 'react';
 import { auth } from './pages/components/firebase/firebase';
@@ -58,20 +60,19 @@ const App = () => {
           <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/top-rated-books" element={<TopRatedPage />} />
+            <Route path="/most-wished-for-books" element={<MostWishedForPage />} />
             <Route path="/book/:id" element={<BookPage />} />
-
             <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route index element={<AdminPanel />} />
             </Route>
-
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
-            <Route index element={<UserPage />} />
-            <Route path="past-orders" element={<UserPastOrdersPage />} />
-            <Route path="past-activity" element={<PastActivity />} />
-          </Route>
-
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+              <Route index element={<UserPage />} />
+              <Route path="past-orders" element={<UserPastOrdersPage />} />
+              <Route path="past-activity" element={<PastActivity />} />
+            </Route>
             <Route path="/cart" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
               <Route index element={<ShoppingCartPage />} />
             </Route>

@@ -34,12 +34,6 @@ const Sidebar = () => {
     fetchGenres();
   }, []);
 
-  const topCategories = [
-    "Best Seller Books",
-    "Most Interested Books",
-    "Top Rated Books",
-  ];
-
   const changeSelection = (genreName) => {
     if (genreFilter.includes(genreName)) {
       setGenreFilter(genreFilter.filter((item) => item !== genreName));
@@ -52,11 +46,10 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <ul className="categories">
-        {topCategories.map((category, index) => (
-          <li key={index}> {category} </li>
-        ))}
+      <Link to={"/top-rated-books"}> <li> Top Rated Books </li></Link>
+      <Link to={"/most-wished-for-books"}> <li> Most Wished For Books </li> </Link> 
       </ul>
-      <br /><br />
+      <br />
       <ul className="categories">
         {loading ? (
           <li>Loading genres...</li>
