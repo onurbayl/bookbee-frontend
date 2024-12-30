@@ -63,7 +63,7 @@ const TopRatedPage = () => {
                 ) :
                     <>
                         <div className="top-book-header"><p>★</p> <h3>Top Rated Books</h3></div>
-                        <BookGrid books={filteredBooks} />
+                        <BookGrid books={filteredBooks} enableSort={false}/>
                     </>
                 }
             </div>

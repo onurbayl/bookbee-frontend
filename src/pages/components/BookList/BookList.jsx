@@ -55,7 +55,6 @@ const BookList = () => {
     const fetchBooksAndDetails = async () => {
       setLoading(true);
       try {
-        console.log("abc", currentUser);
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
         const booksData = response.data;
 

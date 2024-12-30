@@ -119,3 +119,14 @@
     background-color: #CCC;
     cursor: not-allowed;
 }
+
+.sort-buttons {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: flex-end
+}
+
+.sort-buttons p {
+    margin-left: 25px;
+    cursor: pointer;
+}

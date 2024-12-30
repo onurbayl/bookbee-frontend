@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./ShoppingCartPage.css";
 import { FiShoppingCart } from "react-icons/fi";
 import { TbCirclePlus, TbCircleMinus } from "react-icons/tb";
-import { MdOutlineDiscount } from "react-icons/md";
+import { MdOutlineDiscount, MdOutlinePayments } from "react-icons/md";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,7 +13,11 @@ const ShoppingCartPage = () => {
     const [coupons, setCoupons] = useState([]);
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [refresh, setRefresh] = useState(false);
-    const navigate = useNavigate()    
+    const [currentBalance, setCurrentBalance] = useState(0);
+    const [currentAddress, setCurrentAddress] = useState("");
+    const [newAddress, setNewAddress] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,6 +34,12 @@ const ShoppingCartPage = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCoupons(couponResponse.data);
+
+                const userResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/bytoken`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+                );
+                setCurrentBalance(parseFloat(userResponse.data.balance));
             } catch (error) {
                 console.error("Error fetching cart data:", error);
             }
@@ -37,6 +47,21 @@ const ShoppingCartPage = () => {
 
         fetchData();
     }, [refresh]);
+
+    const fetchAddress = async () => {
+        try {
+            const token = await getFirebaseToken();
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL}/customerAddress/get-address`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log(response.data.addressInfo);
+            setCurrentAddress(response.data.addressInfo || "");
+            setNewAddress(response.data.addressInfo || "");
+        } catch (error) {
+            console.error("Error fetching address:", error);
+        }
+    };
 
     const handleIncreaseQuantity = async (bookId) => {
         try {
@@ -76,27 +101,20 @@ const ShoppingCartPage = () => {
         }
     };
 
-    const originalTotalPrice = cartItems.reduce(
-        (sum, item) => sum + item.finalPrice,
-        0
-    );
-
-    const discountedTotalPrice = selectedCoupon
-        ? originalTotalPrice * (1 - selectedCoupon.discountPercentage / 100)
-        : originalTotalPrice;
-
-    const handleCouponClick = (coupon) => {
-        if (selectedCoupon && selectedCoupon.id === coupon.id) {
-            setSelectedCoupon(null);
-        }
-        else {
-            setSelectedCoupon(coupon);
-        }
-    };
-
     const handleCompletePurchase = async () => {
         try {
             const token = await getFirebaseToken();
+            if (newAddress !== currentAddress) {
+                await axios.post(
+                    `${process.env.REACT_APP_API_BASE_URL}/customerAddress/add-address`,
+                    { addressInfo: newAddress },
+                    { headers: { Authorization: `Bearer ${token}` }}
+                );
+                toast.success("Address updated successfully!", {
+                    position: "top-right",
+                    autoClose: 2000,
+                });
+            }
             const requestBody = {
                 couponId: selectedCoupon?.id || null,
             };
@@ -106,20 +124,52 @@ const ShoppingCartPage = () => {
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
-            );    
+            );
             toast.success("Purchase completed successfully!", {
                 position: "top-right",
                 autoClose: 2000,
-            });    
+            });
+            setShowModal(false);
             navigate("/user");
-            return;
         } catch (error) {
             console.error("Error completing purchase:", error);
-    
-            toast.error("Failed to complete purchase. Please try again.", {
+            toast.error(error.response.data.message, {
                 position: "top-right",
                 autoClose: 2000,
             });
+            setRefresh((prev) => !prev);
+        }
+    };
+
+    const handlePayNow = async () => {
+        const discountedTotalPrice = calculateDiscountedTotalPrice();
+        if (currentBalance < discountedTotalPrice) {
+            toast.error(`Insufficient balance to complete the purchase. Your current balance is $${currentBalance.toFixed(2)}.`, {
+                position: "top-right",
+                autoClose: 2000,
+            });
+            return;
+        }
+        await fetchAddress();
+        setShowModal(true);
+    };
+
+    const calculateOriginalTotalPrice = () =>
+        cartItems.reduce((sum, item) => sum + item.finalPrice, 0);
+
+    const calculateDiscountedTotalPrice = () => {
+        const originalTotalPrice = calculateOriginalTotalPrice();
+        return selectedCoupon
+            ? originalTotalPrice * (1 - selectedCoupon.discountPercentage / 100)
+            : originalTotalPrice;
+    };
+
+    const handleCouponClick = (coupon) => {
+        if (selectedCoupon && selectedCoupon.id === coupon.id) {
+            setSelectedCoupon(null);
+        }
+        else {
+            setSelectedCoupon(coupon);
         }
     };
 
@@ -189,20 +239,58 @@ const ShoppingCartPage = () => {
                             <strong>Total:</strong>
                         </p>
                         <p className={`total-amount ${selectedCoupon ? "old" : ""}`}>
-                            <strong>${originalTotalPrice.toFixed(2)}</strong>
+                            <strong>${calculateOriginalTotalPrice().toFixed(2)}</strong>
                         </p>
                         {selectedCoupon && (
                             <>
                                 <p className="coupon-discount"> -{selectedCoupon.discountPercentage}%</p>
-                                <p className="total-discounted"><strong>${discountedTotalPrice.toFixed(2)}</strong></p>
+                                <p className="total-discounted"><strong>${calculateDiscountedTotalPrice().toFixed(2)}</strong></p>
                             </>
                         )}
                     </div>
                 </div>
                     <div className="pay-now">
-                        <button className="pay-btn" onClick={handleCompletePurchase}>Pay Now</button>
+                        <button className="pay-btn" onClick={handlePayNow}>Pay Now</button>
                     </div>
                 </>
+            )}
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2> <p className="payment-icon"> <MdOutlinePayments /></p> Payment Details</h2>
+                        <p>
+                            <strong>Current Balance:</strong> <del>${currentBalance.toFixed(2)}</del>
+                        </p>
+                        <p>
+                            <strong>Total Price:</strong> ${calculateDiscountedTotalPrice().toFixed(2)}
+                        </p>
+                        <p>
+                            <strong>Remaining Balance:</strong>{" "}
+                            ${(currentBalance - calculateDiscountedTotalPrice()).toFixed(2)}
+                        </p>
+                        <div className="address-section">
+                            <h3>Shipping Address</h3>
+                            <textarea
+                                value={newAddress}
+                                onChange={(e) => setNewAddress(e.target.value)}
+                            ></textarea>
+                        </div>
+                        <div className="modal-buttons">
+                            <button
+                                className="modal-cancel"
+                                onClick={() => setShowModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="modal-confirm"
+                                onClick={handleCompletePurchase}
+                            >
+                                Complete Purchase
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

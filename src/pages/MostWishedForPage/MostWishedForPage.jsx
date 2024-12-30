@@ -64,7 +64,7 @@ const MostWishedForPage = () => {
                 ) :
                     <>
                         <div className="wished-book-header"><p><FaHeart /></p> <h3>Most Wished For Books</h3></div>
-                        <BookGrid books={filteredBooks} />
+                        <BookGrid books={filteredBooks} enableSort={false}/>
                     </>
                 }
             </div>

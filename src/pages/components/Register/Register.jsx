@@ -1,11 +1,11 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth } from "../firebase/firebase.js";
 import './register.css'
 import { useAuth } from "../../../AuthContext.js";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 
 function Register() {
   const [password, setPassword] = useState("");
@@ -16,24 +16,21 @@ function Register() {
   const [selectedGenreIds, setSelectedGenreIds] = useState([]);
   const { user, setNewAccountCreationPending } = useAuth()
   const navigate = useNavigate()
+  const [genres, setGenres] = useState([]);
 
-  const genres = [
-    { id: 1, name: "Action & Adventure" },
-    { id: 2, name: "Art & Photography" },
-    { id: 3, name: "Biography" },
-    { id: 4, name: "Detective & Mystery" },
-    { id: 5, name: "Fantasy" },
-    { id: 6, name: "Food & Drink" },
-    { id: 7, name: "History" },
-    { id: 8, name: "Horror" },
-    { id: 9, name: "Poetry" },
-    { id: 10, name: "Romance" },
-    { id: 11, name: "Science & Technology" },
-    { id: 12, name: "Science Fiction" },
-    { id: 13, name: "Self-Help" },
-    { id: 14, name: "Thriller" },
-    { id: 15, name: "World Classics" },
-  ];
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
+        const sortedGenres = response.data.sort((a, b) => a.name.localeCompare(b.name));
+        setGenres(sortedGenres);
+      } catch (error) {
+        console.error("Error fetching genres:", error);
+      }
+    };
+
+    fetchGenres();
+  }, []);
 
   const toggleGenre = (id) => {
     setSelectedGenreIds((prev) =>
@@ -65,6 +62,10 @@ function Register() {
 
     } catch (error) {
       console.log(error.message);
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 
