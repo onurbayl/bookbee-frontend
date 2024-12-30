@@ -331,3 +331,8 @@
 .modal-confirm:hover {
     background-color: #B99971;
 }
+
+.modal-confirm:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

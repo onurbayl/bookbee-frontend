@@ -55,7 +55,6 @@ const ShoppingCartPage = () => {
                 `${process.env.REACT_APP_API_BASE_URL}/customerAddress/get-address`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            console.log(response.data.addressInfo);
             setCurrentAddress(response.data.addressInfo || "");
             setNewAddress(response.data.addressInfo || "");
         } catch (error) {
@@ -285,6 +284,7 @@ const ShoppingCartPage = () => {
                             <button
                                 className="modal-confirm"
                                 onClick={handleCompletePurchase}
+                                disabled={!newAddress.trim()}
                             >
                                 Complete Purchase
                             </button>
