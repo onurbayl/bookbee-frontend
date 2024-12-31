@@ -1,59 +1,42 @@
-.review-card {
-  background-color: #FAFAFA;
-  border: 1px solid #CCCCCC;
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.review {
+  background-color: #fff;
   border-radius: 8px;
   padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  color: #252525;
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.review-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.review-card h3 {
+.review-content {
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.review-date {
+  font-size: 14px;
+  color: #999;
+  text-align: right;
+}
+
+.review-header h4 {
+  margin: 0;
   font-size: 18px;
-  margin: 5px 0;
-  color: #252525;
 }
 
-.review-card p {
-  font-size: 14px;
-  color: #555555;
-  margin: 5px 0;
-}
-
-.review-card .rating {
-  font-size: 16px;
+.review-score {
   font-weight: bold;
-  color: #CAB295;
-}
-
-.review-card .reaction-buttons {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-  gap: 15px;
-}
-
-.like-btn,
-.dislike-btn {
-  background-color: #CAB295;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  color: white;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.like-btn:hover,
-.dislike-btn:hover {
-  background-color: #a9876f;
+  color: #a1805c;
 }
