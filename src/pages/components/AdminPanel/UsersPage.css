@@ -1,0 +1,88 @@
+.users-page {
+  display: flex;
+  flex-direction: column;
+}
+
+/* .users-search-bar styles */
+.users-search-bar {
+  width: 60%; /* Increase the width to 60% of the parent */
+  max-width: 800px; /* Optional: set a maximum width */
+  margin: 20px auto; /* Center the search bar horizontally */
+  padding: 15px; /* Increase padding for a larger input area */
+  font-size: 18px; /* Increase font size for better readability */
+  border: 2px solid #007bff; /* Add a border with blue color */
+  border-radius: 5px; /* Rounded corners */
+  display: block; /* Ensures margin auto works for centering */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+}
+
+
+.users-search-bar:focus {
+  border-color: #b3b000;
+  outline: none;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th, .users-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.users-profile-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* Ban/Unban button styling */
+.users-table button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.users-table button:hover {
+  background-color: rgb(224, 224, 217);
+}
+
+.ban-button {
+  /* background: rgb(77, 127, 154); */
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  color: #f00;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ban-button:hover {
+  color: #e60000; /* Hover effect to make it a bit brighter */
+}
+
+/* Specific color for the Unban (FaUserCheck) icon */
+.ban-button.unban {
+  color: #28a745; /* Green color for unban */
+}
+
+.ban-button.unban:hover {
+  color: #218838; /* Darker green on hover */
+}
+
+.ban-button.ban {
+  color: #dc3545; /* Red color for ban */
+}
+
+.ban-button.ban:hover {
+  color: #c82333; /* Darker red on hover */
+}
