@@ -7,7 +7,6 @@ import BookPage from './pages/BookPage/BookPage';
 import Login from './pages/components/Login/Login';
 import Register from './pages/components/Register/Register';
 import ProtectedRoute from './pages/protectedRoute/ProtectedRoute';
-import AdminPanel from './pages/components/AdminPanel/AdminPanel';
 import UserPage from './pages/UserPage/UserPage';
 import ShoppingCartPage from './pages/ShoppingCartPage/ShoppingCartPage';
 import SearchFilterPage from "./pages/SearchFilterPage/SearchFilterPage";
@@ -24,6 +23,7 @@ import { auth } from './pages/components/firebase/firebase';
 import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdminDash from './pages/components/AdminPanel/AdminDash';
 
 const App = () => {
   const { user, setFetchedUser } = useAuth()
@@ -64,7 +64,7 @@ const App = () => {
             <Route path="/most-wished-for-books" element={<MostWishedForPage />} />
             <Route path="/book/:id" element={<BookPage />} />
             <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]} />}>
-              <Route index element={<AdminPanel />} />
+              <Route index element={<AdminDash />} />
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
