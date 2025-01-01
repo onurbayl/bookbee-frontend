@@ -1,73 +1,133 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { FaBan, FaUserCheck } from 'react-icons/fa';
 import './UsersPage.css';
-import { FaBan, FaUndo, FaUserCheck } from 'react-icons/fa';
-
-const mockUsers = [
-  {
-    id: 1,
-    uid: 'UID123',
-    name: 'Ali Veli',
-    email: 'ali.veli@example.com',
-    role: 'user',
-    isBanned: false,
-    profilePhoto: 'https://via.placeholder.com/40',
-  },
-  {
-    id: 2,
-    uid: 'UID456',
-    name: 'Ayse Fatma',
-    email: 'ayse.fatma@example.com',
-    role: 'admin',
-    isBanned: true,
-    profilePhoto: 'https://via.placeholder.com/40',
-  },
-  {
-    id: 3,
-    uid: 'UID789',
-    name: 'Mehmet Can',
-    email: 'mehmet.can@example.com',
-    role: 'publisher',
-    isBanned: false,
-    profilePhoto: 'https://via.placeholder.com/40',
-  },
-  // Additional mock users for testing pagination
-  { id: 4, uid: 'UID101', name: 'Zeynep Gunes', email: 'zeynep.g@example.com', role: 'user', isBanned: false, profilePhoto: 'https://via.placeholder.com/40' },
-  { id: 5, uid: 'UID102', name: 'Hakan Yildiz', email: 'hakan.y@example.com', role: 'publisher', isBanned: true, profilePhoto: 'https://via.placeholder.com/40' },
-  { id: 6, uid: 'UID103', name: 'Elif Kaya', email: 'elif.k@example.com', role: 'admin', isBanned: false, profilePhoto: 'https://via.placeholder.com/40' },
-  { id: 7, uid: 'UID104', name: 'Burak Demir', email: 'burak.d@example.com', role: 'user', isBanned: false, profilePhoto: 'https://via.placeholder.com/40' },
-  { id: 8, uid: 'UID105', name: 'Melis Aslan', email: 'melis.a@example.com', role: 'user', isBanned: true, profilePhoto: 'https://via.placeholder.com/40' },
-  { id: 9, uid: 'UID106', name: 'Eren Aksoy', email: 'eren.a@example.com', role: 'publisher', isBanned: false, profilePhoto: 'https://via.placeholder.com/40' },
-  { id: 10, uid: 'UID107', name: 'Duygu Tekin', email: 'duygu.t@example.com', role: 'admin', isBanned: false, profilePhoto: 'https://via.placeholder.com/40' },
-];
+import { auth } from '../firebase/firebase';
+import axios from 'axios';
+import { ClipLoader } from 'react-spinners';
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState(mockUsers);
+  const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const usersPerPage = 6;
+
+  useEffect(() => {
+    // Fetch users from backend API
+    const fetchUsers = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const crntUser = auth.currentUser;
+        const token = await crntUser.getIdToken();
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const sortedData = response.data.sort((a, b) => a.id - b.id);
+        setUsers(sortedData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users
+  .filter((user) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      user.name.toLowerCase().includes(searchTermLower) ||
+      user.uid.toLowerCase().includes(searchTermLower) ||
+      user.email.toLowerCase().includes(searchTermLower)
+    );
+  })
+  .sort((a, b) => a.id - b.id);
+
+
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  const handleRoleChange = (userId, newRole) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId ? { ...user, role: newRole } : user
-      )
-    );
+  const handleRoleChange = async (uId, newRole) => {
+    setUsers((prevUsers) => {
+      
+        const updatedUsers = prevUsers.map((user) =>
+            user.uid === uId ? { ...user, role: newRole } : user
+        );
+  
+        
+        return updatedUsers.sort((a, b) => a.id - b.id); // Sorting by id
+    });
+    
+
+    try{
+        const crntUser = auth.currentUser;
+        const token = await crntUser.getIdToken();
+        const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/set-role`, 
+            { uid: uId, role: newRole },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log("Role updated for ", response, uId, newRole)
+
+        //update user role in db in set-role endpoint
+    } catch(error){
+        console.log("Role set: ", error)
+    }
   };
 
-  const handleBanToggle = (userId) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId ? { ...user, isBanned: !user.isBanned } : user
-      )
-    );
-  };
+  const handleBanToggle = async (userId) => {
+    setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.map((user) =>
+            user.id === userId ? { ...user, isDeleted: !user.isDeleted } : user
+        )
 
+        return updatedUsers.sort((a, b) => a.id - b.id);
+    });
+  
+    try {
+      const user = users.find((user) => user.id === userId);
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      const crntUser = auth.currentUser;
+      const token = await crntUser.getIdToken();
+  
+      const requestUrl = user.isDeleted
+        ? `${process.env.REACT_APP_API_BASE_URL}/user/unban/${user.id}`
+        : `${process.env.REACT_APP_API_BASE_URL}/user/ban/${user.id}`;
+  
+      const response = await axios.post(
+        requestUrl, {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log(response);
+    } catch (error) {
+      console.error("Error toggling ban status:", error);
+  
+      // Revert the UI change in case of an error
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, isDeleted: !user.isDeleted } : user
+        )
+      );
+    }
+  };
   
 
   const paginatedUsers = filteredUsers.slice(
@@ -78,6 +138,16 @@ const UsersPage = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+  if (loading) {
+    return <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <ClipLoader color="#36d7b7" loading={loading} size={50} />
+    </div>;
+  }
+
+  if (error) {
+    return <div style={{color: 'red'}}>Error: {error}</div>;
+  }
 
   return (
     <div className="users-page">
@@ -103,7 +173,13 @@ const UsersPage = () => {
         <tbody>
           {paginatedUsers.map((user) => (
             <tr key={user.id}>
-              <td><img src={user.profilePhoto} alt="Profile" className="users-profile-photo" /></td>
+              <td>
+                <img
+                  src={user.imagePath}
+                  alt="Profile"
+                  className="users-profile-photo"
+                />
+              </td>
               <td>{user.id}</td>
               <td>{user.uid}</td>
               <td>{user.name}</td>
@@ -111,7 +187,7 @@ const UsersPage = () => {
               <td>
                 <select
                   value={user.role}
-                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                  onChange={(e) => handleRoleChange(user.uid, e.target.value)}
                 >
                   <option value="user">User</option>
                   <option value="publisher">Publisher</option>
@@ -120,10 +196,14 @@ const UsersPage = () => {
               </td>
               <td>
                 <button
-                    onClick={() => handleBanToggle(user.id)}
-                    className={`ban-button ${user.isBanned ? 'unban' : 'ban'}`} // Conditional class based on ban status
-                    >
-                    {user.isBanned ? <FaUserCheck size={35} /> : <FaBan size={35} />}
+                  onClick={() => handleBanToggle(user.id)}
+                  className={`ban-button ${user.isDeleted ? 'unban' : 'ban'}`}
+                >
+                  {user.isDeleted ? (
+                    <FaUserCheck size={35} />
+                  ) : (
+                    <FaBan size={35} />
+                  )}
                 </button>
               </td>
             </tr>
