@@ -1,44 +1,106 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CommentsPage.css';
 import { FaTrashAlt } from 'react-icons/fa';
+import { auth } from '../firebase/firebase';
+import { ClipLoader } from 'react-spinners';
+import axios from 'axios';
 
-const mockReviews = [
-  { id: 1, userId: 101, reviewId: 201, content: "content", dateCreated: '2024-12-01' },
-  { id: 2, userId: 102, reviewId: 202, content: "content", dateCreated: '2024-12-02' },
-  { id: 3, userId: 103, reviewId: 203, content: "content", dateCreated: '2024-12-03' },
-  { id: 4, userId: 104, reviewId: 204, content: "content", dateCreated: '2024-12-04' },
-  { id: 5, userId: 105, reviewId: 205, content: "content", dateCreated: '2024-12-05' },
-  { id: 6, userId: 106, reviewId: 206, content: "content", dateCreated: '2024-12-06' },
-  { id: 7, userId: 107, reviewId: 207, content: "content", dateCreated: '2024-12-07' },
-  { id: 8, userId: 108, reviewId: 208, content: "content", dateCreated: '2024-12-08' },
-  { id: 9, userId: 109, reviewId: 209, content: "content", dateCreated: '2024-12-09' },
-  { id: 10, userId: 110, reviewId: 210, content: "content", dateCreated: '2024-12-10' },
-];
 
 const CommentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [reviews, setReviews] = useState(mockReviews);
+  const [comments, setComments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const commentsPerPage = 7;
 
-  const filteredReviews = reviews.filter((review) =>
-    review.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Fetch reviews from backend API
+    const fetchComments = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const crntUser = auth.currentUser;
+        const token = await crntUser.getIdToken();
+        
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/comment`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  const reviewsPerPage = 7;
-  const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
+        console.log(response)
 
-  const handleDeleteReview = (reviewId) => {
-    setReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId));
+        const sortedData = response.data.sort((a, b) => a.id - b.id);
+        setComments(sortedData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, []);
+
+
+  const filteredComments = comments
+  .filter((comment) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      comment.user.name.toLowerCase().includes(searchTermLower) ||
+      comment.user.email.toLowerCase().includes(searchTermLower) ||
+      comment.content.toLowerCase().includes(searchTermLower) ||
+      comment.review.content.toLowerCase().includes(searchTermLower) 
+    );
+  })
+  .sort((a, b) => a.id - b.id);
+
+  
+  const totalPages = Math.ceil(filteredComments.length / commentsPerPage);
+
+  const handleDeleteComment = async (commentId) => {
+    setComments((prevComments) => {
+        const updatedComments = prevComments.filter((comment) => comment.id !== commentId)
+        return updatedComments.sort((a, b) => a.id - b.id)
+    });
+
+    try {
+        const crntUser = auth.currentUser;
+        const token = await crntUser.getIdToken();
+
+        const requestUrl = `${process.env.REACT_APP_API_BASE_URL}/comment/delete-comment/${commentId}`;
+
+        const response = await axios.delete(requestUrl, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        console.log(response)
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+    }
   };
 
-  const paginatedReviews = filteredReviews.slice(
-    (currentPage - 1) * reviewsPerPage,
-    currentPage * reviewsPerPage
+  const paginatedComments = filteredComments.slice(
+    (currentPage - 1) * commentsPerPage,
+    currentPage * commentsPerPage
   );
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+  if (loading) {
+    return <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <ClipLoader color="#36d7b7" loading={loading} size={50} />
+    </div>;
+  }
+
+  if (error) {
+    return <div style={{color: 'red'}}>Error: {error}</div>;
+  }
 
   return (
     <div className="reviews-page">
@@ -53,7 +115,7 @@ const CommentsPage = () => {
         <thead>
           <tr>
             <th>Comment ID</th>
-            <th>User ID</th>
+            <th>User UID</th>
             <th>Review ID</th>
             <th>Content</th>
             <th>Date Created</th>
@@ -61,15 +123,15 @@ const CommentsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedReviews.map((comment) => (
+          {paginatedComments.map((comment) => (
             <tr key={comment.id}>
               <td>{comment.id}</td>
-              <td>{comment.userId}</td>
-              <td>{comment.reviewId}</td>
+              <td>{comment.user.uid}</td>
+              <td>{comment.review.id}</td>
               <td>{comment.content}</td>
               <td>{comment.dateCreated}</td>
               <td>
-              <button className="delete-btn" onClick={() => handleDeleteReview(comment.id)}>
+              <button className="delete-btn" onClick={() => handleDeleteComment(comment.id)}>
                   <FaTrashAlt size={20} /> {/* Use FaTrashAlt from react-icons */}
                 </button>
               </td>
