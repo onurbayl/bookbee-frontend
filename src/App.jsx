@@ -9,13 +9,14 @@ import Register from './pages/components/Register/Register';
 import ProtectedRoute from './pages/protectedRoute/ProtectedRoute';
 import AdminPanel from './pages/components/AdminPanel/AdminPanel';
 import UserPage from './pages/UserPage/UserPage';
+import UserVisitPage from './pages/UserVisitPage/UserVisitPage';
 import ShoppingCartPage from './pages/ShoppingCartPage/ShoppingCartPage';
 import SearchFilterPage from "./pages/SearchFilterPage/SearchFilterPage";
 import AuthorPage from "./pages/AuthorPage/AuthorPage";
 import PublisherPage from "./pages/PublisherPage/PublisherPage";
 import PublisherPanel from './pages/PublisherPanelPage/PublisherPanelPage';
-import UserPastOrdersPage from "./pages/components/UserPastOrdersPage/UserPastOrdersPage";
-import PastActivity from "./pages/components/PastActivity/PastActivity";
+import OrderHistory from "./pages/components/OrderHistory/OrderHistory";
+import Wishlist from "./pages/components/Wishlist/Wishlist";
 import TopRatedPage from "./pages/TopRatedPage/TopRatedPage";
 import MostWishedForPage from "./pages/MostWishedForPage/MostWishedForPage";
 import { useAuth } from './AuthContext';
@@ -70,9 +71,10 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/user" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
               <Route index element={<UserPage />} />
-              <Route path="past-orders" element={<UserPastOrdersPage />} />
-              <Route path="past-activity" element={<PastActivity />} />
+              <Route path="order-history" element={<OrderHistory />} />
+              <Route path="wishlist" element={<Wishlist />} />
             </Route>
+            <Route path="/user/:id" element={<UserVisitPage />} />
             <Route path="/cart" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
               <Route index element={<ShoppingCartPage />} />
             </Route>

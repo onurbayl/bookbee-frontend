@@ -1,19 +1,23 @@
 import React from 'react';
 import './UserPageBookList.css';
+import { Link } from "react-router-dom";
 
-const UserPageBookList = ({ title, books, onEdit }) => {
+const UserPageBookList = ({ title, items }) => {
+  if (!items || items.length === 0) {
+    return null;
+  }
+
   return (
     <div className="userpage-booklist">
       <div className="list-header">
         <h3>{title}</h3>
-        <button className="edit-button" onClick={onEdit}>
-          Edit
-        </button>
       </div>
       <ul>
-        {books.map((book, index) => (
+        {items.map((item, index) => (
           <li key={index}>
-            <span>{book}</span>
+            <Link to={`/book/${item.book.id}`}>
+              <span>{item.book.name}</span>
+            </Link>
           </li>
         ))}
       </ul>

@@ -1,11 +1,12 @@
 .userpage-booklist {
   padding: 15px;
-  border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .list-header {
+  margin-left: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,11 +14,12 @@
 }
 
 .list-header h3 {
-  font-size: 16px;
+  font-size: 18px;
   color: #333;
 }
 
 .userpage-booklist ul {
+  margin: 10px;
   list-style: none;
   padding: 0;
 }
@@ -27,6 +29,6 @@
 }
 
 .userpage-booklist li span {
-  font-size: 14px;
+  font-size: 16px;
   color: #333;
 }

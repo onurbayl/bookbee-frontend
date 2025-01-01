@@ -1,0 +1,140 @@
+.order-history-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.order-history-page h2 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.order-container {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary {
+    display: flex;
+    gap: 150px;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-summary-text {
+    margin: 2px;
+}
+
+.view-details-button {
+    padding: 10px 20px;
+    background-color: #CAB295;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
+
+.view-details-button:hover {
+    background-color: #B99971;
+}
+
+.order-details {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.order-book {
+    display: flex;
+    align-items: center;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.order-book-image {
+    margin-left: 50px;
+}
+
+.order-book img {
+    max-width: 100px;
+    max-height: 120px;
+    margin-right: 15px;
+}
+
+.order-book-details {
+    flex-direction: row;
+    width: 200px;
+    margin-left: 50px;
+}
+
+.order-book-details-first {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    text-align: center;
+}
+
+.order-book-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.order-book-author {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 0;
+}
+
+.other-book-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    color: #555;
+    margin-left: 50px;
+    width: 300px;
+}
+
+.other-book-info p {
+    margin: 2px;
+}
+
+.order-book-pricing {
+    text-align: right;
+    width: 150px;
+    padding: 5px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.order-final-book-pricing {
+
+    text-align: right;
+    padding: 5px;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.order-final-price {
+    font-size: 1.4rem;
+}
+
+.no-found {
+    margin-left: 10px;
+    color: #555;
+}

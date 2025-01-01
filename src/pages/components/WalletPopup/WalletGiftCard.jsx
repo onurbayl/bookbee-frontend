@@ -1,18 +1,81 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './WalletPopup.css';
+import axios from 'axios';
+import { useAuth } from '../../../AuthContext.js';
+import { getFirebaseToken } from "../firebase/getFirebaseToken";
+import { toast } from "react-toastify";
 
-const WalletGiftCard = ({ onBack, onUpdateBalance }) => {
+const WalletGiftCard = ({ onBack }) => {
+  const { user } = useAuth();
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
+  const [friends, setFriends] = useState([]);
+  const [balance, setBalance] = useState(null);
 
-  const handleGift = () => {
-    const numericAmount = parseFloat(amount);
-    if (recipient && numericAmount > 0) {
-      onUpdateBalance(-numericAmount); // Deduct from balance
-      setRecipient('');
-      setAmount('');
-      onBack(); // Return to the main wallet page
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const token = await getFirebaseToken();
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/friend/get-friends`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setFriends(response.data || []);
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+        toast.error("Failed to fetch friends.");
+      }
+    };
+
+    fetchFriends();
+  }, []);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const token = await getFirebaseToken();
+        const userResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setBalance(parseFloat(userResponse.data.balance));
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [user]);
+
+  const handleGift = async () => {
+    if (!recipient || !amount) {
+      toast.error("Please select a friend and enter an amount.");
+      return;
     }
+    if(amount > balance) {
+      toast.error("Your balance is insufficient.");
+      return;
+    }
+    try {
+      const token = await getFirebaseToken();
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/user/gift/${recipient}`,
+        { amount },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Gift sent successfully!");
+      refreshPage();
+    } catch (error) {
+      console.error("Error sending gift:", error);
+      toast.error("There was an error sending the gift.");
+    }
+  };
+
+  const refreshPage = () => {
+    window.location.reload();
   };
 
   return (
@@ -22,9 +85,11 @@ const WalletGiftCard = ({ onBack, onUpdateBalance }) => {
         Select Friend:
         <select value={recipient} onChange={(e) => setRecipient(e.target.value)}>
           <option value="">-- Select Friend --</option>
-          <option value="John">John</option>
-          <option value="Alice">Alice</option>
-          <option value="Bob">Bob</option>
+          {friends.map(friend => (
+            <option key={friend.id} value={friend.id}>
+              {friend.name}
+            </option>
+          ))}
         </select>
       </label>
       <label>

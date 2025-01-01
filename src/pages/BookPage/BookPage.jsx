@@ -104,14 +104,13 @@ const BookPage = () => {
     const fetchReadStatus = async () => {
       if (!currentUser)
         return;
-      try {
+      try {        
+        const token = await getFirebaseToken();
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/readStatus/get-readStatus/${currentUser.id}`
+          `${process.env.REACT_APP_API_BASE_URL}/readStatus/get-readStatus-byBook/${bookId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        const readStatus = response.data.find((status) => status.bookId === parseInt(bookId, 10));
-        if (readStatus) {
-          setSelectedFlag(readStatus.status);
-        }
+        setSelectedFlag(response.data.status);  
       } catch (error) {
         console.error("Error fetching read status:", error);
       }
@@ -240,6 +239,10 @@ const BookPage = () => {
       setHoveredStars(0);
     } catch (error) {
       console.error("Error adding review:", error);
+      toast.error(error.response.data.message, {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 
@@ -379,7 +382,7 @@ const BookPage = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSelectedFlag(flag);
+      (flag === selectedFlag) ? setSelectedFlag(null) : setSelectedFlag(flag);
     } catch (error) {
       console.error("Error setting read status:", error);
     }
@@ -524,7 +527,11 @@ const BookPage = () => {
                 <div key={review.id} className="review">
                   <div className="book-review-data">
                     <div className="book-review-first">
-                      <h4>{review.user.name}</h4>
+                      {currentUser && (currentUser.id === review.user.id) ? (
+                        <h4>{review.user.name}</h4>
+                      ) : (
+                        <Link to={`/user/${review.user.id}`}><h4>{review.user.name}</h4></Link>
+                      )}
                       <Rating score={review.score} />
                     </div>
                     <p className="book-review-second">{review.content}</p>
@@ -558,7 +565,13 @@ const BookPage = () => {
                       <div className="comments-list">
                         {review.comments?.map((comment, commentIndex) => (
                           <div key={commentIndex} className="comment">
-                            <div className="comment-first"> <h4>{comment.user.name}</h4> </div>
+                            <div className="comment-first">
+                              {currentUser && (currentUser.id === comment.user.id) ? (
+                                <h4>{comment.user.name}</h4>
+                              ) : (
+                                <Link to={`/user/${comment.user.id}`}><h4>{comment.user.name}</h4></Link>
+                              )}
+                            </div>
                             <div className="comment-second"> {comment.content} </div>
                             <div className="comment-third">
                               <p

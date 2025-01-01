@@ -1,14 +1,39 @@
 import React, { useState } from 'react';
 import './WalletPopup.css';
+import axios from 'axios';
+import { useAuth } from '../../../AuthContext.js';
+import { getFirebaseToken } from "../firebase/getFirebaseToken";
+import { toast } from "react-toastify";
 
-const WalletLoadMoney = ({ onBack, onUpdateBalance }) => {
+const WalletLoadMoney = ({ onBack }) => {
+  const { fetchedUser } = useAuth();
   const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLoad = () => {
+  const refreshPage = () => {
+    window.location.reload();
+  };
+  
+  const handleLoad = async () => {
     const numericAmount = parseFloat(amount);
     if (!isNaN(numericAmount) && numericAmount > 0) {
-      onUpdateBalance(numericAmount);
-      setAmount('');
+      const currentBalance = parseFloat(fetchedUser.balance);
+      const updatedBalance = (currentBalance + numericAmount).toFixed(2);
+      try {
+        setLoading(true);
+        const token = await getFirebaseToken();
+        await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}/user/${fetchedUser.id}`,
+          { balance: updatedBalance },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        refreshPage();
+      } catch (error) {
+        console.error('Error loading money:', error);
+        toast.error('Failed to load money. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -24,7 +49,9 @@ const WalletLoadMoney = ({ onBack, onUpdateBalance }) => {
           placeholder="Enter amount"
         />
       </label>
-      <button onClick={handleLoad} className="wallet-action-button">Load Money</button>
+      <button onClick={handleLoad} className="wallet-action-button" disabled={loading}>
+        {loading ? 'Loading...' : 'Load Money'}
+      </button>
       <button onClick={onBack} className="wallet-back-button">Back</button>
     </div>
   );

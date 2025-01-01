@@ -77,8 +77,12 @@ select {
   border-radius: 4px;
 }
 
+input {
+  width: 95%;
+}
+
 .wallet-action-button {
-  background-color: #D1B894;
+  background-color: #CAB295;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -88,11 +92,11 @@ select {
 }
 
 .wallet-action-button:hover {
-  background-color: #C4A88A;
+  background-color: #B99971;
 }
 
 .wallet-back-button {
-  background-color: #bca588;
+  background-color: #CAB295;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -102,5 +106,5 @@ select {
 }
 
 .wallet-back-button:hover {
-  background-color: #a38c72;
+  background-color: #B99971;
 }

@@ -1,16 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import WalletMain from './WalletMain';
 import WalletGiftCard from './WalletGiftCard';
 import WalletLoadMoney from './WalletLoadMoney';
 import WalletWithdraw from './WalletWithdraw';
 import './WalletPopup.css';
+import { useAuth } from '../../../AuthContext.js';
+import { getFirebaseToken } from "../firebase/getFirebaseToken";
+import axios from 'axios';
 
 const WalletPopup = ({ onClose }) => {
-  const [currentPage, setCurrentPage] = useState('wallet'); // Track which page to display
-  const [balance, setBalance] = useState(2500); // Wallet balance
+  const { user } = useAuth();
+  const [currentPage, setCurrentPage] = useState('wallet');
+  const [balance, setBalance] = useState(null);
 
   const navigateTo = (page) => setCurrentPage(page);
-  const updateBalance = (amount) => setBalance((prev) => prev + amount);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!user) {
+        return;
+      }
+      try {
+        const token = await getFirebaseToken();
+
+        const userResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setBalance(userResponse.data.balance);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [user]);
+
 
   return (
     <div className="wallet-popup-overlay">
@@ -22,13 +47,19 @@ const WalletPopup = ({ onClose }) => {
 
         {currentPage === 'wallet' && <WalletMain balance={balance} onNavigate={navigateTo} />}
         {currentPage === 'giftCard' && (
-          <WalletGiftCard onBack={() => navigateTo('wallet')} onUpdateBalance={updateBalance} />
+          <WalletGiftCard onBack={() => {
+            navigateTo('wallet');
+          }} />
         )}
         {currentPage === 'loadMoney' && (
-          <WalletLoadMoney onBack={() => navigateTo('wallet')} onUpdateBalance={updateBalance} />
+          <WalletLoadMoney onBack={() => {
+            navigateTo('wallet');
+          }} />
         )}
         {currentPage === 'withdraw' && (
-          <WalletWithdraw onBack={() => navigateTo('wallet')} onUpdateBalance={updateBalance} />
+          <WalletWithdraw onBack={() => {
+            navigateTo('wallet');
+          }} />
         )}
       </div>
     </div>

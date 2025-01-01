@@ -8,6 +8,11 @@ const booksRead = ['Moby Dick', 'Pride and Prejudice', 'War and Peace'];
 const mockFriendsList = ['John Doe', 'Jane Smith', 'Mark Johnson', 'Alice Brown', 'Bob White']; // Mock Friends
 const favoriteCategories = ['Fiction', 'Classics', 'Philosophy'];
 
+
+
+
+
+
 const Profile = () => {
   const [bio, setBio] = useState(
     "I'm an avid reader who loves to get lost in stories that make me think..."

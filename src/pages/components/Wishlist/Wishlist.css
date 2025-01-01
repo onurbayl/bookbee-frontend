@@ -1,26 +1,35 @@
-.past-orders-page {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    margin: 0 auto;
+.wishlist-page {
+    display: flex;
+    flex-direction: row;
 }
 
-.past-orders-page h1 {
-    text-align: center;
+.results-section {
+    flex: 1;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1000px;
+    padding-top: 15px;
+}
+
+.results-section h3 {
+    margin-top: 20px;
     margin-bottom: 20px;
-    color: #333;
 }
 
-.order-container {
-    margin-bottom: 40px;
+.wishlist-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-.order-container h2 {
-    margin-bottom: 10px;
-    color: #444;
-    font-size: 1.2rem;
+.wishlist-header p {
+    font-size: 1.1rem;
+    margin: 0;
+    margin-top: 3px;
+}
+
+.wishlist-header h3 {
+    margin-left: 20px;
 }
 
 .search-book-results {
@@ -41,11 +50,11 @@
     cursor: pointer;
 }
 
-.search-book-placeholder-image {
-    width: 140px;
-    height: 160px;
-    background-color: #C4C4C4;
-    border-radius: 4px;
+.search-book-image img {
+    height: auto;
+    width: auto;
+    max-width: 140px;
+    max-height: 160px;
     margin-left: 20px;
 }
 
@@ -75,18 +84,6 @@
     margin-bottom: 0;
 }
 
-.search-book-publisher {
-    font-size: 0.9rem;
-    color: #555;
-    margin-top: 5px;
-}
-
-.search-book-rating {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 0;
-}
-
 .other-book-info {
     display: flex;
     flex-direction: column;
@@ -98,19 +95,6 @@
 
 .other-book-info p {
     margin: 2px;
-}
-
-.search-book-price {
-    text-align: right;
-    width: 100px;
-    margin-top: auto;
-    margin-bottom: 0;
-    padding: 5px;
-    margin-left: 50px;
-}
-
-.search-book-final-price {
-    font-size: 1.4rem;
 }
 
 .no-found {

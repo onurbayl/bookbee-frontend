@@ -57,6 +57,8 @@ const BookList = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
         const booksData = response.data;
+        const wishlistResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books-wishlist`);
+        const wishlistBooksData = wishlistResponse.data;
 
         setTopRatedBooks(booksData.slice(0, 8));
 
@@ -75,7 +77,7 @@ const BookList = () => {
           : selectedGenreForTopRated;
         setMostInterestedGenre(selectedGenreForMostInterested);
 
-        const genreBooksMostInterested = booksData.filter(book =>
+        const genreBooksMostInterested = wishlistBooksData.filter(book =>
           book.genres.some(genre => genre.name === selectedGenreForMostInterested)
         );
         setMostInterestedBooks(genreBooksMostInterested.slice(0, 8));
