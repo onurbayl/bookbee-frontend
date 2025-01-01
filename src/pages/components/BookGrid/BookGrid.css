@@ -93,14 +93,14 @@
     color: #555;
 }
 
-.pagination {
+.bookgrid-pagination {
     display: flex;
     justify-content: center;
     margin-top: 20px;
     margin-bottom: 50px;    
 }
 
-.pagination-button {
+.bookgrid-pagination-button {
     margin: 0 5px;
     padding: 10px 15px;
     border: none;
@@ -109,13 +109,13 @@
     color: #555;
 }
 
-.pagination-button.active {
+.bookgrid-pagination-button.active {
     font-weight: bold;
     background-color: #CAB295;
     color: #fff;
 }
 
-.pagination-button:disabled {
+.bookgrid-pagination-button:disabled {
     background-color: #CCC;
     cursor: not-allowed;
 }
