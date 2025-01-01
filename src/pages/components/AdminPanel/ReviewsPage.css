@@ -1,0 +1,136 @@
+.reviews-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviews-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reviews-table th, .reviews-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.reviews-table button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reviews-table button:hover {
+  background-color: #0056b3;
+}
+
+/* .pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.pagination button:hover {
+  background-color: #007bff;
+  color: #ffffff;
+} */
+
+.pagination {
+  display: flex;
+  justify-content: flex-end; /* Aligns pagination to the right */
+  margin-top: 20px;
+  gap: 10px; /* Space between buttons */
+}
+
+.pagination button {
+  padding: 10px 20px; /* Increase button size */
+  font-size: 16px; /* Increase font size */
+  border: 2px solid #007bff; /* Add a border for better visibility */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #f8f9fa; /* Light background */
+  color: #007bff; /* Button text color */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #007bff; /* Change background on hover */
+  color: white; /* Change text color on hover */
+}
+
+.pagination button.active {
+  background-color: #007bff; /* Active button background color */
+  color: white; /* Active button text color */
+  font-weight: bold; /* Emphasize active button */
+}
+
+
+
+/* .reviews-search-bar {
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+} */
+
+.reviews-search-bar {
+  width: 60%; /* Increase the width to 60% of the parent */
+  max-width: 800px; /* Optional: set a maximum width */
+  margin: 20px auto; /* Center the search bar horizontally */
+  padding: 15px; /* Increase padding for a larger input area */
+  font-size: 18px; /* Increase font size for better readability */
+  border: 2px solid #007bff; /* Add a border with blue color */
+  border-radius: 5px; /* Rounded corners */
+  display: block; /* Ensures margin auto works for centering */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+}
+
+
+.reviews-search-bar:focus {
+  border-color: #b3b000; /* Change the border color on focus */
+  outline: none; /* Remove the default outline */
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+button.delete-btn {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+
+button.delete-btn:hover {
+  background-color: darkred;
+}
+
+
+
