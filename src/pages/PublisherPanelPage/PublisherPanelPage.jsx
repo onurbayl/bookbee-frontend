@@ -12,7 +12,23 @@ import axios from 'axios';
 const PublisherPanel = () => {
     const [ ordersByTime, setOrdersByTime ] = useState([]);
     const [ publishedBooks, setPublishedBooks ] = useState([]);
+    const [ removedBooks, setRemovedBooks ] = useState([]);
 
+    const fetchRemovedBooks = async () => {
+        try {
+            const token = await getFirebaseToken();
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL}/book/get-deleted-publisher-books`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            const booksData = response.data;
+
+            setRemovedBooks(booksData);
+        } catch (error) {
+            console.log('Error during fetching published books: ', error);
+        }
+    };
     
     const fetchPublishedBooks = async () => {
         try {
@@ -24,55 +40,9 @@ const PublisherPanel = () => {
             );
             const booksData = response.data;
 
-            const booksWithDetails = await Promise.all(
-                booksData.map(async (book) => {
-                    let discountPercentage = 0;
-                    let finalPrice = parseFloat(book.price);
-
-                    try {
-                        const discountResponse = await axios.get(
-                            `${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${book.id}`
-                        );
-                        if (discountResponse.data) {
-                            discountPercentage = discountResponse.data.discountPercentage || 0;
-                            finalPrice =
-                                parseFloat(book.price) -
-                                parseFloat(book.price) * (discountPercentage / 100);
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching discount for book ID ${book.id}:`, error);
-                    }
-
-                    let rating = 0;
-                    let reviewCount = 0;
-
-                    try {
-                        const reviewsResponse = await axios.get(
-                            `${process.env.REACT_APP_API_BASE_URL}/review/get-reviews-book/${book.id}`
-                        );
-                        const reviews = reviewsResponse.data || [];
-                        reviewCount = reviews.length;
-
-                        const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
-                        rating = reviewCount > 0 ? totalScore / reviewCount / 2 : 0;
-                    } catch (error) {
-                        console.error(`Error fetching reviews for book ID ${book.id}:`, error);
-                    }
-
-                    return {
-                        ...book,
-                        discountPercentage,
-                        finalPrice,
-                        rating: parseFloat(rating),
-                        reviewCount,
-                    };
-                })
-            );
-
-            setPublishedBooks(booksWithDetails);
+            setPublishedBooks(booksData);
         } catch (error) {
-            console.log('Error during fetching published books: ', error);
-            setPublishedBooks([]);
+            console.log('Error during fetching removed books: ', error);
         }
     };
 
@@ -89,11 +59,13 @@ const PublisherPanel = () => {
             setOrdersByTime(response.data || []);
         } catch (error) {
             console.log('Error during fetching orders by time: ', error);
-            setOrdersByTime([]);
         }
     };
 
+    
+
     useEffect(() => {
+        fetchRemovedBooks();
         fetchPublishedBooks();
         fetchOrderDataByTime();
     }, []);
@@ -161,6 +133,14 @@ const PublisherPanel = () => {
                 <div className="search-results-line"></div>
                 <Link to={"/upload-book"}><button className="search-btn upload-btn"><span><FaPlus />&nbsp;</span>Add New</button> </Link>
                 <BookGrid books={publishedBooks} enableEdit={true} />
+            </div>
+        </div>
+
+        <div className="search-filter-page">
+            <div className="results-section">
+                <div className="search-book-header"><p><FaBook />&nbsp;</p><h2>Removed Books</h2></div>
+                <div className="search-results-line"></div>
+                <BookGrid books={removedBooks} enableEdit={true} />
             </div>
         </div>
         </>
