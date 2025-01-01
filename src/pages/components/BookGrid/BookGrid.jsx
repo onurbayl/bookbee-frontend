@@ -78,7 +78,7 @@ const BookGrid = ({ books, enableEdit = false, enableSort = true }) => {
                         </div>
                         <div className="search-book-price">
                             {enableEdit ? (
-                                <Link to={"/update-book"}><button className="search-btn update-btn">Edit</button></Link>
+                                <Link to={`/update-book/${book.id}`}><button className="search-btn update-btn">Edit</button></Link>
                             ) : null}
                             {book.discountPercentage > 0 ? (
                                 <>

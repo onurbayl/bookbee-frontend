@@ -25,6 +25,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminDash from './pages/components/AdminPanel/AdminDash';
+import BookForm from './pages/components/BookForm/BookForm';
 
 const App = () => {
   const { user, setFetchedUser } = useAuth()
@@ -80,8 +81,15 @@ const App = () => {
             </Route>
             <Route path="/search" element={<SearchFilterPage />} />
             <Route path="/author/:id" element={<AuthorPage />} />
-            <Route path="/publisher/:id" element={<PublisherPage />} /><Route path="/publisher-panel" element={<ProtectedRoute allowedRoles={["user", "publisher", "admin"]} />}>
+            <Route path="/publisher/:id" element={<PublisherPage />} />
+            <Route path="/publisher-panel" element={<ProtectedRoute allowedRoles={["publisher", "admin"]} />}>
               <Route index element={<PublisherPanel />} />
+            </Route>
+            <Route path="/upload-book" element={<ProtectedRoute allowedRoles={["publisher", "admin"]} />}>
+              <Route index element={<BookForm />} />
+            </Route>
+            <Route path="/update-book/:id" element={<ProtectedRoute allowedRoles={["publisher", "admin"]} />}>
+              <Route index element={<BookForm uploadNotUpdate = {false} />} />
             </Route>
           </Routes>
         </Router>
