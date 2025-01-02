@@ -173,7 +173,7 @@ const UserVisitPage = () => {
                 items={haveRead}
               />
               <UserPageBookList
-                title="Books Currently Reading"
+                title="Books Reading"
                 items={reading}
               />
               <UserPageBookList
