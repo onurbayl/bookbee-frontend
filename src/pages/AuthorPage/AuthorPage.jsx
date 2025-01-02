@@ -6,6 +6,7 @@ import "./AuthorPage.css";
 import { useSearch } from "../../SearchContext";
 import { FaPenAlt } from "react-icons/fa";
 import axios from "axios";
+import { ClipLoader } from 'react-spinners';
 
 const AuthorPage = () => {
     const { id } = useParams();
@@ -54,7 +55,7 @@ const AuthorPage = () => {
             <Sidebar />
             <div className="author-results-section">
                 {loading ? (
-                    <div className="loading-spinner">Loading books...</div>
+                    <div style={{textAlign: "center"}}><ClipLoader color="#007bff" size={20} /></div>
                 ) : (
                     <>
                         <div className="author-book-header"><p><FaPenAlt /></p><h3>{authorName}</h3></div>

@@ -6,6 +6,7 @@ import "./PublisherPage.css";
 import { useSearch } from "../../SearchContext";
 import { IoPrintSharp } from "react-icons/io5";
 import axios from "axios";
+import { ClipLoader } from 'react-spinners';
 
 const PublisherPage = () => {
     const { id } = useParams();
@@ -54,7 +55,7 @@ const PublisherPage = () => {
             <Sidebar />
             <div className="publisher-results-section">
                 {loading ? (
-                    <div className="loading-spinner">Loading books...</div>
+                    <div style={{textAlign: "center"}}><ClipLoader color="#007bff" size={20} /></div>
                 ) : (
                     <>
                         <div className="publisher-book-header"><p><IoPrintSharp /></p><h3>{publisherName}</h3></div>
