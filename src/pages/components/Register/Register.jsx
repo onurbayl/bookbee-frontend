@@ -50,8 +50,20 @@ function Register() {
       const crnUser = auth.currentUser
       console.log(crnUser)
 
+      const imagePaths = [
+        "user1.png",
+        "user2.png",
+        "user3.png",
+        "user4.png",
+        "user5.png",
+        "user6.png",
+        "user7.png",
+        "user8.png"
+      ];
+      const randomIndex = Math.floor(Math.random() * imagePaths.length);
+      
 
-      const requestBody = { name, email, description, uid: crnUser.uid, favoriteGenres: selectedGenreIds, imagePath: "d" }
+      const requestBody = { name, email, description, uid: crnUser.uid, favoriteGenres: selectedGenreIds, imagePath: imagePaths[randomIndex] }
       const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/create`, requestBody)
       console.log("Create user in database response: ", response.data)
       //setNewAccountCreationPending(false);
