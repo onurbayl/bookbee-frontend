@@ -8,6 +8,7 @@ import { FaBook } from "react-icons/fa6";
 import { FaPenAlt } from "react-icons/fa";
 import { IoPrintSharp } from "react-icons/io5";
 import axios from "axios";
+import { ClipLoader } from 'react-spinners';
 
 const SearchFilterPage = () => {
     const {
@@ -96,7 +97,7 @@ const SearchFilterPage = () => {
             <Sidebar />
             <div className="results-section">
                 {loading ? (
-                    <div>Loading...</div>
+                    <div style={{textAlign: "center"}}><ClipLoader color="#007bff" size={20} /></div>
                 ) : searchQuery.trim() ? (
                     <>
                         <h2>Search Results</h2>

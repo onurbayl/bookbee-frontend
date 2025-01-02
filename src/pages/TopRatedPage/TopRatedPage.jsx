@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar/Sidebar";
 import BookGrid from "../components/BookGrid/BookGrid";
 import { useSearch } from "../../SearchContext";
 import axios from "axios";
+import { ClipLoader } from 'react-spinners';
 
 const TopRatedPage = () => {
     const {
@@ -59,7 +60,7 @@ const TopRatedPage = () => {
             <Sidebar />
             <div className="results-section">
                 {loading ? (
-                    <div>Loading...</div>
+                    <div style={{textAlign: "center"}}><ClipLoader color="#007bff" size={20} /></div>
                 ) :
                     <>
                         <div className="top-book-header"><p>★</p> <h3>Top Rated Books</h3></div>

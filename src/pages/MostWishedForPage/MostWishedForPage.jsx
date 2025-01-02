@@ -5,6 +5,7 @@ import BookGrid from "../components/BookGrid/BookGrid";
 import { useSearch } from "../../SearchContext";
 import axios from "axios";
 import { FaHeart } from "react-icons/fa";
+import { ClipLoader } from 'react-spinners';
 
 const MostWishedForPage = () => {
     const {
@@ -60,7 +61,7 @@ const MostWishedForPage = () => {
             <Sidebar />
             <div className="results-section">
                 {loading ? (
-                    <div>Loading...</div>
+                    <div style={{textAlign: "center"}}><ClipLoader color="#007bff" size={20} /></div>
                 ) :
                     <>
                         <div className="wished-book-header"><p><FaHeart /></p> <h3>Most Wished For Books</h3></div>
