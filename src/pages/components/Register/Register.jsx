@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { auth } from "../firebase/firebase.js";
 import './register.css'
 import { useAuth } from "../../../AuthContext.js";
-import axios from "axios";
+import axiost from "../../../axiosConfig.js";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -21,7 +21,7 @@ function Register() {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
         const sortedGenres = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setGenres(sortedGenres);
       } catch (error) {
@@ -64,7 +64,7 @@ function Register() {
       
 
       const requestBody = { name, email, description, uid: crnUser.uid, favoriteGenres: selectedGenreIds, imagePath: imagePaths[randomIndex] }
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/create`, requestBody)
+      const response = await axiost.post(`${process.env.REACT_APP_API_BASE_URL}/user/create`, requestBody)
       console.log("Create user in database response: ", response.data)
       //setNewAccountCreationPending(false);
 

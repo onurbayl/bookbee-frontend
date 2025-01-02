@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './BookForm.css'
-import axios from "axios";
+import axiost from "../../../axiosConfig.js";
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -40,7 +40,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
     fetchBook = async (id) => {
       try {
         const token = await getFirebaseToken();
-        const fetchedBook = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-publisher-bookId/${id}`, {
+        const fetchedBook = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-publisher-bookId/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
         setBook(fetchedBook.data || {});
@@ -63,7 +63,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
 
     fetchDiscount = async (id) => {
       try {
-        const fetchedDiscount = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${id}`);
+        const fetchedDiscount = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${id}`);
         setDiscount(fetchedDiscount.data || {});
       } catch (error) {
         console.log(error.message);
@@ -97,7 +97,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
         console.log(requestBody);
         const token = await getFirebaseToken();
   
-        const response = await axios.patch(
+        const response = await axiost.patch(
           `${process.env.REACT_APP_API_BASE_URL}/book/update-book/${book.id}`, 
           requestBody, {
             headers: { Authorization: `Bearer ${token}` },
@@ -124,7 +124,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
 
         const token = await getFirebaseToken();
   
-        const response = await axios.post(
+        const response = await axiost.post(
           `${process.env.REACT_APP_API_BASE_URL}/discount/add-discount`, 
           requestBody, {
             headers: { Authorization: `Bearer ${token}` },
@@ -142,7 +142,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
       try {
         const token = await getFirebaseToken();
   
-        const response = await axios.delete(
+        const response = await axiost.delete(
           `${process.env.REACT_APP_API_BASE_URL}/book/delete-book/${book.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -162,7 +162,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
       try {
         const token = await getFirebaseToken();
   
-        const response = await axios.post(
+        const response = await axiost.post(
           `${process.env.REACT_APP_API_BASE_URL}/book/reupload-book/${book.id}`, {}, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -181,7 +181,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
 
   const fetchGenres = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
+      const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
       const sortedGenres = response.data.sort((a, b) => a.name.localeCompare(b.name));
       setGenres(sortedGenres);
     } catch (error) {
@@ -202,7 +202,18 @@ const BookForm = ({ uploadNotUpdate = true }) => {
   const handleUpload = async (e) => {
     e.preventDefault();
     try {
-      const imagePath = 'bird.png';
+      const imagePaths = [
+        "bird.png",
+        "castle.png",
+        "flower.png",
+        "horse.png",
+        "jungle.png",
+        "night.png",
+        "sword.png",
+        "girl.png"
+      ];
+      const randomIndex = Math.floor(Math.random() * imagePaths.length);
+
       const requestBody = { 
         'name': name, 
         'description': description, 
@@ -215,17 +226,21 @@ const BookForm = ({ uploadNotUpdate = true }) => {
         'barcode': barcode, 
         'isbn': isbn, 
         'editionNumber': editionNumber, 
-        'imagePath': imagePath, 
+        'imagePath': imagePaths[randomIndex], 
         'genres': selectedGenreIds }
       const token = await getFirebaseToken();
 
-      const response = await axios.post(
+      const response = await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/book/upload-book`, 
         requestBody, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
       navigate("/publisher-panel");
+      toast.success(`${book.name} is uploaded to the store.`, {
+        position: "top-right",
+        autoClose: 2000,
+      });
     } catch (error) {
       console.log(error.message);
     }

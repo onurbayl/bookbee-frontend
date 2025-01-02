@@ -8,7 +8,7 @@ import { IoBookOutline } from "react-icons/io5";
 import { FaHeart, FaRegCommentDots } from "react-icons/fa";
 import { BiLike, BiDislike } from "react-icons/bi";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
-import axios from "axios";
+import axiost from "../../axiosConfig.js";
 import { useAuth } from '../../AuthContext.js';
 import { CiCircleRemove } from "react-icons/ci";
 import { toast } from "react-toastify";
@@ -38,7 +38,7 @@ const BookPage = () => {
       try {
         const token = await getFirebaseToken();
 
-        const userResponse = await axios.get(
+        const userResponse = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -54,7 +54,7 @@ const BookPage = () => {
   useEffect(() => {
     const fetchBookData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-bookId/${bookId}`);
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-bookId/${bookId}`);
         setBook(response.data);
       } catch (error) {
         console.error("Error fetching book data:", error);
@@ -69,7 +69,7 @@ const BookPage = () => {
   useEffect(() => {
     const fetchBookDiscount = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/discount/get-discount/${bookId}`
         );
         const discountData = response.data;
@@ -107,7 +107,7 @@ const BookPage = () => {
         return;
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/readStatus/get-readStatus-byBook/${bookId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -124,7 +124,7 @@ const BookPage = () => {
     const fetchReviewsWithComments = async () => {
       try {
         const token = user ? await getFirebaseToken() : null;
-        const reviewsResponse = await axios.get(
+        const reviewsResponse = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/review/get-reviews-book/${bookId}`,
           token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
@@ -132,7 +132,7 @@ const BookPage = () => {
 
         const reviewsWithComments = await Promise.all(
           reviews?.map(async (review) => {
-            const commentsResponse = await axios.get(
+            const commentsResponse = await axiost.get(
               `${process.env.REACT_APP_API_BASE_URL}/comment/get-comments-by-review/${review.id}`,
               token ? { headers: { Authorization: `Bearer ${token}` } } : {}
             );
@@ -166,7 +166,7 @@ const BookPage = () => {
       if (!user) return;
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/wishList/get-items`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -229,7 +229,7 @@ const BookPage = () => {
 
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/review/add-review/${bookId}`,
         newReview,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -250,7 +250,7 @@ const BookPage = () => {
   const handleDeleteReview = async () => {
     try {
       const token = await getFirebaseToken();
-      await axios.delete(
+      await axiost.delete(
         `${process.env.REACT_APP_API_BASE_URL}/review/delete-review/${bookId}/${currentUser.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -274,7 +274,7 @@ const BookPage = () => {
 
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/comment/add-comment/${reviewId}`,
         { content: newComments[reviewIndex] },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -306,7 +306,7 @@ const BookPage = () => {
     }
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/review-like/add-like/${reviewId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -324,7 +324,7 @@ const BookPage = () => {
     }
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/review-like/add-dislike/${reviewId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -342,7 +342,7 @@ const BookPage = () => {
     }
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/comment-like/add-like/${commentId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -360,7 +360,7 @@ const BookPage = () => {
     }
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/comment-like/add-dislike/${commentId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -378,7 +378,7 @@ const BookPage = () => {
     }
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/readStatus/set-readStatus/${bookId}/status/${flag}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -397,7 +397,7 @@ const BookPage = () => {
     try {
       const token = await getFirebaseToken();
       if (isInWishlist) {
-        await axios.delete(
+        await axiost.delete(
           `${process.env.REACT_APP_API_BASE_URL}/wishList/remove-item/${bookId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -406,7 +406,7 @@ const BookPage = () => {
           autoClose: 2000,
         });
       } else {
-        await axios.post(
+        await axiost.post(
           `${process.env.REACT_APP_API_BASE_URL}/wishList/add-item/${bookId}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
@@ -429,7 +429,7 @@ const BookPage = () => {
     }
     try {
       const token = await getFirebaseToken();
-      await axios.patch(
+      await axiost.patch(
         `${process.env.REACT_APP_API_BASE_URL}/cart-item/add-item/${bookId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }

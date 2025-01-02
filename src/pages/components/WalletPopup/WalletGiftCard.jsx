@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './WalletPopup.css';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { useAuth } from '../../../AuthContext.js';
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
 import { toast } from "react-toastify";
@@ -16,7 +16,7 @@ const WalletGiftCard = ({ onBack }) => {
     const fetchFriends = async () => {
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/friend/get-friends`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -37,7 +37,7 @@ const WalletGiftCard = ({ onBack }) => {
       }
       try {
         const token = await getFirebaseToken();
-        const userResponse = await axios.get(
+        const userResponse = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -67,7 +67,7 @@ const WalletGiftCard = ({ onBack }) => {
     try {
       const token = await getFirebaseToken();
       console.log(recipient);
-      await axios.put(
+      await axiost.put(
         `${process.env.REACT_APP_API_BASE_URL}/user/transfer/${recipient}`,
         { amount: numericAmount },
         { headers: { Authorization: `Bearer ${token}` } }

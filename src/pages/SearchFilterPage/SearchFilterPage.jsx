@@ -9,6 +9,7 @@ import { FaPenAlt } from "react-icons/fa";
 import { IoPrintSharp } from "react-icons/io5";
 import axios from "axios";
 import { ClipLoader } from 'react-spinners';
+import axiost from "../../axiosConfig.js";
 
 const SearchFilterPage = () => {
     const {
@@ -29,7 +30,7 @@ const SearchFilterPage = () => {
         const fetchBooksAndDetails = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
+                const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
                 const booksData = response.data;
                 const sortedBooks = booksData.sort((a, b) => a.id - b.id);
                 setBooks(sortedBooks);

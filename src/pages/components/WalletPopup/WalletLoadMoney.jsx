@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './WalletPopup.css';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { useAuth } from '../../../AuthContext.js';
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
 import { toast } from "react-toastify";
@@ -22,7 +22,7 @@ const WalletLoadMoney = ({ onBack }) => {
       try {
         setLoading(true);
         const token = await getFirebaseToken();
-        await axios.put(
+        await axiost.put(
           `${process.env.REACT_APP_API_BASE_URL}/user/${fetchedUser.id}`,
           { balance: updatedBalance },
           { headers: { Authorization: `Bearer ${token}` } }

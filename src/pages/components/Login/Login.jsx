@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { auth } from "../firebase/firebase.js";
 import "./login.css"
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -21,6 +22,10 @@ function Login() {
 
     } catch (error) {
       console.log(error.message);
+      toast.warning("Check your credentials", {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 

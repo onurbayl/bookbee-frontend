@@ -5,7 +5,7 @@ import BookGrid from "../components/BookGrid/BookGrid";
 import "./PublisherPage.css";
 import { useSearch } from "../../SearchContext";
 import { IoPrintSharp } from "react-icons/io5";
-import axios from "axios";
+import axiost from "../../axiosConfig.js";
 import { ClipLoader } from 'react-spinners';
 
 const PublisherPage = () => {
@@ -19,7 +19,7 @@ const PublisherPage = () => {
         const fetchBooksByPublisher = async () => {
             setLoading(true);
             try {
-                const booksResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
+                const booksResponse = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
                 const books = booksResponse.data || [];
 
                 const decodedPublisherName = decodeURIComponent(id);

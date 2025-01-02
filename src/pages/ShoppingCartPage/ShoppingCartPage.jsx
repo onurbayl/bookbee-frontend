@@ -5,7 +5,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { TbCirclePlus, TbCircleMinus } from "react-icons/tb";
 import { MdOutlineDiscount, MdOutlinePayments } from "react-icons/md";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
-import axios from "axios";
+import axiost from "../../axiosConfig.js";
 import { toast } from "react-toastify";
 
 const ShoppingCartPage = () => {
@@ -24,18 +24,18 @@ const ShoppingCartPage = () => {
             try {
                 const token = await getFirebaseToken();
 
-                const cartResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/cart-item/get-items`, {
+                const cartResponse = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/cart-item/get-items`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const sortedCartItems = cartResponse.data.sort((a, b) => a.id - b.id);
                 setCartItems(sortedCartItems);
 
-                const couponResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/coupon/get-coupons`, {
+                const couponResponse = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/coupon/get-coupons`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCoupons(couponResponse.data);
 
-                const userResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/bytoken`, {
+                const userResponse = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/user/bytoken`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }
                 );
@@ -51,7 +51,7 @@ const ShoppingCartPage = () => {
     const fetchAddress = async () => {
         try {
             const token = await getFirebaseToken();
-            const response = await axios.get(
+            const response = await axiost.get(
                 `${process.env.REACT_APP_API_BASE_URL}/customerAddress/get-address`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -65,7 +65,7 @@ const ShoppingCartPage = () => {
     const handleIncreaseQuantity = async (bookId) => {
         try {
             const token = await getFirebaseToken();
-            await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/cart-item/add-item/${bookId}`, {}, {
+            await axiost.patch(`${process.env.REACT_APP_API_BASE_URL}/cart-item/add-item/${bookId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -83,7 +83,7 @@ const ShoppingCartPage = () => {
     const handleDecreaseQuantity = async (bookId) => {
         try {
             const token = await getFirebaseToken();
-            await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/cart-item/remove-item/${bookId}`, {}, {
+            await axiost.patch(`${process.env.REACT_APP_API_BASE_URL}/cart-item/remove-item/${bookId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -104,7 +104,7 @@ const ShoppingCartPage = () => {
         try {
             const token = await getFirebaseToken();
             if (newAddress !== currentAddress) {
-                await axios.post(
+                await axiost.post(
                     `${process.env.REACT_APP_API_BASE_URL}/customerAddress/add-address`,
                     { addressInfo: newAddress },
                     { headers: { Authorization: `Bearer ${token}` }}
@@ -117,7 +117,7 @@ const ShoppingCartPage = () => {
             const requestBody = {
                 couponId: selectedCoupon?.id || null,
             };
-            await axios.post(
+            await axiost.post(
                 `${process.env.REACT_APP_API_BASE_URL}/order/complete-purchase`,
                 requestBody,
                 {

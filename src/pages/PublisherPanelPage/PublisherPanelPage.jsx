@@ -6,7 +6,7 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 
 import "./PublisherPanelPage.css";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
-import axios from 'axios';
+import axiost from "../../axiosConfig.js";
 
 
 const PublisherPanel = () => {
@@ -17,7 +17,7 @@ const PublisherPanel = () => {
     const fetchRemovedBooks = async () => {
         try {
             const token = await getFirebaseToken();
-            const response = await axios.get(
+            const response = await axiost.get(
                 `${process.env.REACT_APP_API_BASE_URL}/book/get-deleted-publisher-books`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -33,7 +33,7 @@ const PublisherPanel = () => {
     const fetchPublishedBooks = async () => {
         try {
             const token = await getFirebaseToken();
-            const response = await axios.get(
+            const response = await axiost.get(
                 `${process.env.REACT_APP_API_BASE_URL}/book/get-publisher-books`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -50,7 +50,7 @@ const PublisherPanel = () => {
     const fetchOrderDataByTime = async () => {
         try {
             const token = await getFirebaseToken();
-            const response = await axios.get(
+            const response = await axiost.get(
                 `${process.env.REACT_APP_API_BASE_URL}/order-item/get-book-data/15`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }

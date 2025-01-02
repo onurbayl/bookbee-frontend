@@ -6,7 +6,7 @@ import WalletPopup from '../components/WalletPopup/WalletPopup';
 import './UserPage.css';
 import { BiLike, BiDislike } from "react-icons/bi";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
-import axios from "axios";
+import axiost from "../../axiosConfig.js";
 import { useAuth } from '../../AuthContext.js';
 import { toast } from "react-toastify";
 import UserPageBookList from '../components/UserPageBookList/UserPageBookList';
@@ -43,7 +43,7 @@ const UserPage = () => {
     const fetchFriends = async () => {
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/friend/get-friends`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -56,7 +56,7 @@ const UserPage = () => {
     const fetchFriendRequests = async () => {
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/friend/get-friend-requests`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -68,7 +68,7 @@ const UserPage = () => {
 
     const fetchFlags = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/readStatus/get-readStatus/${fetchedUser.id}`
         );
         setFlags(response.data || []);
@@ -83,7 +83,7 @@ const UserPage = () => {
         return;
       }
       try {
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/review/get-last-ten-reviews/${fetchedUser.id}`
         );
         setReviews(response.data || []);
@@ -115,7 +115,7 @@ const UserPage = () => {
 
   const fetchAllGenres = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
+      const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
       setAllGenres(response.data || []);
     } catch (error) {
       console.error("Error fetching genres:", error);
@@ -136,7 +136,7 @@ const UserPage = () => {
     if (isEditingBio) {
       try {
         const token = await getFirebaseToken();
-        await axios.put(
+        await axiost.put(
           `${process.env.REACT_APP_API_BASE_URL}/user/${fetchedUser.id}`,
           { description: bio },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -154,7 +154,7 @@ const UserPage = () => {
     if (isEditingCategories) {
       try {
         const token = await getFirebaseToken();
-        await axios.put(
+        await axiost.put(
           `${process.env.REACT_APP_API_BASE_URL}/user/${fetchedUser.id}`,
           { favoriteGenres: categories },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -188,7 +188,7 @@ const UserPage = () => {
   const handleAcceptRequest = async (requestId) => {
     try {
       const token = await getFirebaseToken();
-      await axios.patch(
+      await axiost.patch(
         `${process.env.REACT_APP_API_BASE_URL}/friend/accept-request/${requestId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
@@ -205,7 +205,7 @@ const UserPage = () => {
   const handleRejectRequest = async (requestId) => {
     try {
       const token = await getFirebaseToken();
-      await axios.delete(
+      await axiost.delete(
         `${process.env.REACT_APP_API_BASE_URL}/friend/delete-friend-or-request/${requestId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -220,7 +220,7 @@ const UserPage = () => {
   const handleRemoveFriend = async (friendId) => {
     try {
       const token = await getFirebaseToken();
-      await axios.delete(
+      await axiost.delete(
         `${process.env.REACT_APP_API_BASE_URL}/friend/delete-friend-or-request/${friendId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );

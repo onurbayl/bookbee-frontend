@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ReviewsPage.css';
 import { FaTrashAlt } from 'react-icons/fa';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { ClipLoader } from 'react-spinners';
 import { auth } from '../firebase/firebase';
 import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
@@ -23,7 +23,7 @@ const ReviewsPage = () => {
         const crntUser = auth.currentUser;
         const token = await crntUser.getIdToken();
 
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/review`, {
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/review`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -71,7 +71,7 @@ const ReviewsPage = () => {
 
       const requestUrl = `${process.env.REACT_APP_API_BASE_URL}/review/delete-review/${bookId}/${userId}`;
 
-      const response = await axios.delete(requestUrl, {
+      const response = await axiost.delete(requestUrl, {
         headers: {
           Authorization: `Bearer ${token}`
         }
