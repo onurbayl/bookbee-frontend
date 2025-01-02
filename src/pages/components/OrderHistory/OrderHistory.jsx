@@ -87,8 +87,8 @@ const OrderHistory = () => {
                         </div>
                         <div className="order-book-details">
                           <div className="order-book-details-first">
-                            <h2 className="order-book-title">{item.book.name}</h2>
-                            <p className="order-book-author">{item.book.writer}</p>
+                            <div className="order-book-title">{item.book.name}</div>
+                            <div className="order-book-author">{item.book.writer}</div>
                           </div>
                         </div>
                         <div className="other-book-info">

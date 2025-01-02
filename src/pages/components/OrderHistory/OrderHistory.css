@@ -86,8 +86,7 @@
 .order-book-details-first {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    text-align: center;
+    gap: 10px;
 }
 
 .order-book-title {
@@ -98,7 +97,7 @@
 .order-book-author {
     font-size: 0.9rem;
     color: #555;
-    margin-top: 0;
+    margin-bottom: 70px;
 }
 
 .other-book-info {
