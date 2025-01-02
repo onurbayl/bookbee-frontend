@@ -3,7 +3,7 @@ import './CommentsPage.css';
 import { FaTrashAlt } from 'react-icons/fa';
 import { auth } from '../firebase/firebase';
 import { ClipLoader } from 'react-spinners';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
 
 const CommentsPage = () => {
@@ -23,7 +23,7 @@ const CommentsPage = () => {
         const crntUser = auth.currentUser;
         const token = await crntUser.getIdToken();
 
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/comment`, {
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/comment`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -71,7 +71,7 @@ const CommentsPage = () => {
 
       const requestUrl = `${process.env.REACT_APP_API_BASE_URL}/comment/delete-comment/${commentId}`;
 
-      const response = await axios.delete(requestUrl, {
+      const response = await axiost.delete(requestUrl, {
         headers: {
           Authorization: `Bearer ${token}`
         }

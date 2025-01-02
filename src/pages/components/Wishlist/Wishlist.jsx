@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Wishlist.css";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiost from "../../../axiosConfig.js";
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
 import { FaHeart } from "react-icons/fa";
 
@@ -14,7 +14,7 @@ const WishlistPage = () => {
             setLoading(true);
             try {
                 const token = await getFirebaseToken();
-                const response = await axios.get(
+                const response = await axiost.get(
                     `${process.env.REACT_APP_API_BASE_URL}/wishList/get-items`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );

@@ -4,7 +4,7 @@ import Rating from '../components/Rating/Rating';
 import './UserVisitPage.css';
 import { BiLike, BiDislike } from "react-icons/bi";
 import { getFirebaseToken } from "../components/firebase/getFirebaseToken";
-import axios from "axios";
+import axiost from "../../axiosConfig.js";
 import { useAuth } from '../../AuthContext.js';
 import { toast } from 'react-toastify';
 import UserPageBookList from '../components/UserPageBookList/UserPageBookList';
@@ -30,7 +30,7 @@ const UserVisitPage = () => {
     const fetchUserData = async () => {
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/${userId}`,
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/user/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setFetchedUser(response.data);
@@ -52,7 +52,7 @@ const UserVisitPage = () => {
     const fetchFriends = async () => {
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/friend/get-friends`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -64,7 +64,7 @@ const UserVisitPage = () => {
 
     const fetchFlags = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/readStatus/get-readStatus/${fetchedUser.id}`
         );
         setFlags(response.data || []);
@@ -75,7 +75,7 @@ const UserVisitPage = () => {
 
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/review/get-last-ten-reviews/${fetchedUser.id}`
         );
         setReviews(response.data || []);
@@ -109,7 +109,7 @@ const UserVisitPage = () => {
 
     try {
       const token = await getFirebaseToken();
-      await axios.post(
+      await axiost.post(
         `${process.env.REACT_APP_API_BASE_URL}/friend/send-request/${userId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }

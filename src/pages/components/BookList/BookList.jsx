@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BookCard from '../BookCard/BookCard';
 import './BookList.css';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { useAuth } from '../../../AuthContext.js';
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
 import { ClipLoader } from 'react-spinners';
@@ -25,7 +25,7 @@ const BookList = () => {
       try {
         const token = await getFirebaseToken();
 
-        const userResponse = await axios.get(
+        const userResponse = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -41,7 +41,7 @@ const BookList = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
         const genresData = response.data;
         setAllGenres(genresData.map(genre => genre.name));
       } catch (error) {
@@ -56,9 +56,9 @@ const BookList = () => {
     const fetchBooksAndDetails = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
         const booksData = response.data;
-        const wishlistResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books-wishlist`);
+        const wishlistResponse = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books-wishlist`);
         const wishlistBooksData = wishlistResponse.data;
 
         setTopRatedBooks(booksData.slice(0, 8));

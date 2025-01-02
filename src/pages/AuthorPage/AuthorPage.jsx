@@ -5,8 +5,8 @@ import BookGrid from "../components/BookGrid/BookGrid";
 import "./AuthorPage.css";
 import { useSearch } from "../../SearchContext";
 import { FaPenAlt } from "react-icons/fa";
-import axios from "axios";
 import { ClipLoader } from 'react-spinners';
+import axiost from "../../axiosConfig.js";
 
 const AuthorPage = () => {
     const { id } = useParams();
@@ -19,7 +19,7 @@ const AuthorPage = () => {
         const fetchBooksByAuthor = async () => {
             setLoading(true);
             try {
-                const booksResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
+                const booksResponse = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books`);
                 const books = booksResponse.data || [];
 
                 const decodedAuthorName = decodeURIComponent(id);

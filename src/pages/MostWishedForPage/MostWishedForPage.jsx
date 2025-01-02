@@ -3,7 +3,7 @@ import "./MostWishedForPage.css";
 import Sidebar from "../components/Sidebar/Sidebar";
 import BookGrid from "../components/BookGrid/BookGrid";
 import { useSearch } from "../../SearchContext";
-import axios from "axios";
+import axiost from "../../axiosConfig.js";
 import { FaHeart } from "react-icons/fa";
 import { ClipLoader } from 'react-spinners';
 
@@ -22,7 +22,7 @@ const MostWishedForPage = () => {
         const fetchBooksAndDetails = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books-wishlist`);
+                const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-all-books-wishlist`);
                 const booksData = response.data;
                 setBooks(booksData);
                 

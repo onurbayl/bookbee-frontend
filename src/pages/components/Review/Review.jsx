@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import Rating from '../Rating/Rating';
 import { BiLike, BiDislike } from 'react-icons/bi';
 import { FaRegCommentDots } from 'react-icons/fa';
@@ -13,7 +13,7 @@ const Review = ({ userId, currentUser }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiost.get(
           `http://localhost:3000/api/v1/review/get-last-ten-reviews/${userId}`
         );
         setReviews(response.data || []);
@@ -32,7 +32,7 @@ const Review = ({ userId, currentUser }) => {
       updatedReviews[index].likeCount += 1; // Increment locally
       setReviews(updatedReviews);
 
-      await axios.post(`/api/v1/review/like/${reviews[index].id}`);
+      await axiost.post(`/api/v1/review/like/${reviews[index].id}`);
     } catch (error) {
       console.error('Error liking review:', error);
     }
@@ -45,7 +45,7 @@ const Review = ({ userId, currentUser }) => {
       updatedReviews[index].dislikeCount += 1; // Increment locally
       setReviews(updatedReviews);
 
-      await axios.post(`/api/v1/review/dislike/${reviews[index].id}`);
+      await axiost.post(`/api/v1/review/dislike/${reviews[index].id}`);
     } catch (error) {
       console.error('Error disliking review:', error);
     }

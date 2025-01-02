@@ -6,7 +6,7 @@ import WalletWithdraw from './WalletWithdraw';
 import './WalletPopup.css';
 import { useAuth } from '../../../AuthContext.js';
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 
 const WalletPopup = ({ onClose }) => {
   const { user } = useAuth();
@@ -23,7 +23,7 @@ const WalletPopup = ({ onClose }) => {
       try {
         const token = await getFirebaseToken();
 
-        const userResponse = await axios.get(
+        const userResponse = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/user/bytoken`,
           { headers: { Authorization: `Bearer ${token}` } }
         );

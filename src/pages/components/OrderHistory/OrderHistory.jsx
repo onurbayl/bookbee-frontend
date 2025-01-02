@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from "axios";
+import axiost from "../../../axiosConfig.js";
 import './OrderHistory.css';
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
 import { Link } from "react-router-dom";
@@ -15,7 +15,7 @@ const OrderHistory = () => {
       setLoading(true);
       try {
         const token = await getFirebaseToken();
-        const response = await axios.get(
+        const response = await axiost.get(
           `${process.env.REACT_APP_API_BASE_URL}/order/get-history`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -39,7 +39,7 @@ const OrderHistory = () => {
 
     try {
       const token = await getFirebaseToken();
-      const response = await axios.get(
+      const response = await axiost.get(
         `${process.env.REACT_APP_API_BASE_URL}/order/get-history/${orderId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );

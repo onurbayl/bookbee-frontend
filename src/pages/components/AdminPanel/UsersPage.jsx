@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaBan, FaUserCheck } from 'react-icons/fa';
 import './UsersPage.css';
 import { auth } from '../firebase/firebase';
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { ClipLoader } from 'react-spinners';
 import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
 
@@ -23,7 +23,7 @@ const UsersPage = () => {
       try {
         const crntUser = auth.currentUser;
         const token = await crntUser.getIdToken();
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user`, {
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -70,7 +70,7 @@ const UsersPage = () => {
     try {
       const crntUser = auth.currentUser;
       const token = await crntUser.getIdToken();
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/set-role`,
+      const response = await axiost.post(`${process.env.REACT_APP_API_BASE_URL}/user/set-role`,
         { uid: uId, role: newRole },
         {
           headers: {
@@ -108,7 +108,7 @@ const UsersPage = () => {
         ? `${process.env.REACT_APP_API_BASE_URL}/user/unban/${user.id}`
         : `${process.env.REACT_APP_API_BASE_URL}/user/ban/${user.id}`;
 
-      const response = await axios.post(
+      const response = await axiost.post(
         requestUrl, {},
         {
           headers: {

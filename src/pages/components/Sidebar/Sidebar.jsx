@@ -3,7 +3,7 @@ import './Sidebar.css';
 import Slider from 'react-slider';
 import { Link } from 'react-router-dom';
 import { useSearch } from "../../../SearchContext";
-import axios from 'axios';
+import axiost from "../../../axiosConfig.js";
 import { ClipLoader } from 'react-spinners';
 
 const Sidebar = () => {
@@ -22,7 +22,7 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
+        const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/genre/get-all-genres`);
         const sortedGenres = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setGenres(sortedGenres);
         setLoading(false);
