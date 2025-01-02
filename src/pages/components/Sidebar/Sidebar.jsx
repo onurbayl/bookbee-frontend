@@ -4,6 +4,7 @@ import Slider from 'react-slider';
 import { Link } from 'react-router-dom';
 import { useSearch } from "../../../SearchContext";
 import axios from 'axios';
+import { ClipLoader } from 'react-spinners';
 
 const Sidebar = () => {
   const {
@@ -52,7 +53,7 @@ const Sidebar = () => {
       <br />
       <ul className="categories">
         {loading ? (
-          <li>Loading genres...</li>
+          <li><ClipLoader color="#007bff" size={20} /></li>
         ) : (
           genres.map((genre) => (
             <li

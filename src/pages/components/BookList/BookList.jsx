@@ -4,6 +4,7 @@ import './BookList.css';
 import axios from 'axios';
 import { useAuth } from '../../../AuthContext.js';
 import { getFirebaseToken } from "../firebase/getFirebaseToken";
+import { ClipLoader } from 'react-spinners';
 
 const BookList = () => {
   const { user } = useAuth();
@@ -94,7 +95,7 @@ const BookList = () => {
 
   return (
     <div className="book-list">
-      {loading ? <p>Loading...</p> : (
+      {loading ? <ClipLoader color="#007bff" size={20} /> : (
         <>
           <h2>Top Rated {topRatedGenre} Books</h2>
           <div className="books-container">

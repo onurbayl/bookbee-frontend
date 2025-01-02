@@ -12,6 +12,7 @@ import axios from "axios";
 import { useAuth } from '../../AuthContext.js';
 import { CiCircleRemove } from "react-icons/ci";
 import { toast } from "react-toastify";
+import { ClipLoader } from 'react-spinners';
 
 const BookPage = () => {
   const { id: bookId } = useParams();
@@ -104,13 +105,13 @@ const BookPage = () => {
     const fetchReadStatus = async () => {
       if (!currentUser)
         return;
-      try {        
+      try {
         const token = await getFirebaseToken();
         const response = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/readStatus/get-readStatus-byBook/${bookId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setSelectedFlag(response.data.status);  
+        setSelectedFlag(response.data.status);
       } catch (error) {
         console.error("Error fetching read status:", error);
       }
@@ -654,7 +655,7 @@ const BookPage = () => {
             </div>
           </>
         ) : (
-          <p>Loading book details...</p>
+          <ClipLoader color="#007bff" size={20} />
         )}
       </div>
     </div>
