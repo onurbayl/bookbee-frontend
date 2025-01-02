@@ -55,19 +55,27 @@ const WalletGiftCard = ({ onBack }) => {
       toast.error("Please select a friend and enter an amount.");
       return;
     }
-    if(amount > balance) {
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      toast.error("Please enter a valid amount.");
+      return;
+    }    
+    if(numericAmount > balance) {
       toast.error("Your balance is insufficient.");
       return;
     }
     try {
       const token = await getFirebaseToken();
-      await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/user/gift/${recipient}`,
-        { amount },
+      console.log(recipient);
+      await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/user/transfer/${recipient}`,
+        { amount: numericAmount },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Gift sent successfully!");
-      refreshPage();
+      setTimeout(() => {
+        refreshPage();
+      }, 800);
     } catch (error) {
       console.error("Error sending gift:", error);
       toast.error("There was an error sending the gift.");

@@ -27,7 +27,10 @@ const WalletWithdraw = ({ onBack }) => {
           { balance: updatedBalance },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        refreshPage();
+        toast.success("Money withdrawn successfully!");
+        setTimeout(() => {
+          refreshPage();
+        }, 800);
       } catch (error) {
         console.error('Error withdrawing money:', error);
         toast.error('Failed to withdraw money. Please try again.');

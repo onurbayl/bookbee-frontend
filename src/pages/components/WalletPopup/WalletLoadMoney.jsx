@@ -27,7 +27,10 @@ const WalletLoadMoney = ({ onBack }) => {
           { balance: updatedBalance },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        refreshPage();
+        toast.success("Money loaded successfully!");
+        setTimeout(() => {
+          refreshPage();
+        }, 800);
       } catch (error) {
         console.error('Error loading money:', error);
         toast.error('Failed to load money. Please try again.');
