@@ -57,9 +57,9 @@ const WalletGiftCard = ({ onBack }) => {
     }
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
-      toast.error("Please enter a valid amount.");
+      toast.error("The amount should be more than 0.");
       return;
-    }    
+    }
     if(numericAmount > balance) {
       toast.error("Your balance is insufficient.");
       return;

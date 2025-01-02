@@ -13,7 +13,7 @@ const WalletLoadMoney = ({ onBack }) => {
   const refreshPage = () => {
     window.location.reload();
   };
-  
+
   const handleLoad = async () => {
     const numericAmount = parseFloat(amount);
     if (!isNaN(numericAmount) && numericAmount > 0) {
@@ -37,6 +37,9 @@ const WalletLoadMoney = ({ onBack }) => {
       } finally {
         setLoading(false);
       }
+    }
+    else {
+      toast.error("The amount should be more than 0.");
     }
   };
 

@@ -13,11 +13,15 @@ const WalletWithdraw = ({ onBack }) => {
   const refreshPage = () => {
     window.location.reload();
   };
-  
+
   const handleWithdraw = async () => {
     const numericAmount = parseFloat(amount);
     if (!isNaN(numericAmount) && numericAmount > 0) {
       const currentBalance = parseFloat(fetchedUser.balance);
+      if (numericAmount > currentBalance) {
+        toast.error("Your balance is insufficient.");
+        return;
+      }
       const updatedBalance = (currentBalance - numericAmount).toFixed(2);
       try {
         setLoading(true);
@@ -37,6 +41,9 @@ const WalletWithdraw = ({ onBack }) => {
       } finally {
         setLoading(false);
       }
+    }
+    else {
+      toast.error("The amount should be more than 0.");
     }
   };
 
