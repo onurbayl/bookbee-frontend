@@ -55,6 +55,7 @@ const BookPage = () => {
     const fetchBookData = async () => {
       try {
         const response = await axiost.get(`${process.env.REACT_APP_API_BASE_URL}/book/get-bookId/${bookId}`);
+        console.log(response.data);
         setBook(response.data);
       } catch (error) {
         console.error("Error fetching book data:", error);
