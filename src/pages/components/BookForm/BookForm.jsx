@@ -237,7 +237,7 @@ const BookForm = ({ uploadNotUpdate = true }) => {
         });
 
       navigate("/publisher-panel");
-      toast.success(`${book.name} is uploaded to the store.`, {
+      toast.success(`${requestBody.name} is uploaded to the store.`, {
         position: "top-right",
         autoClose: 2000,
       });

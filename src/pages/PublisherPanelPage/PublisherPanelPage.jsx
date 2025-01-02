@@ -140,7 +140,7 @@ const PublisherPanel = () => {
             <div className="results-section">
                 <div className="search-book-header"><p><FaBook />&nbsp;</p><h2>Removed Books</h2></div>
                 <div className="search-results-line"></div>
-                <BookGrid books={removedBooks} enableEdit={true} />
+                <BookGrid books={removedBooks} enableEdit={true} disableLink={true} />
             </div>
         </div>
         </>

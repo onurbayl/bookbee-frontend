@@ -4,7 +4,7 @@ import "./BookGrid.css";
 import { FaSortAlphaDown, FaSortAlphaDownAlt, FaSortAmountDown, FaSortAmountDownAlt, FaDollarSign } from "react-icons/fa";
 import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
 
-const BookGrid = ({ books, enableEdit = false, enableSort = true }) => {
+const BookGrid = ({ books, enableEdit = false, enableSort = true, disableLink = false }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [sortOption, setSortOption] = useState(null);
     const booksPerPage = 10;
@@ -53,7 +53,7 @@ const BookGrid = ({ books, enableEdit = false, enableSort = true }) => {
             )}
             <div className="search-book-results">
                 {currentBooks.map((book) => (
-                    <Link key={book.id} to={`/book/${book.id}`} className="search-book">
+                    <Link key={book.id} to={ disableLink ? ('#!') : (`/book/${book.id}`)} className="search-book">
                         <div className="search-book-image">
                             <img src={`${process.env.PUBLIC_URL}/${book.imagePath}`} alt={book.name} />
                         </div>
