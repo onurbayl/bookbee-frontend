@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./BookGrid.css";
-import { GrPrevious, GrNext } from "react-icons/gr";
 import { FaSortAlphaDown, FaSortAlphaDownAlt, FaSortAmountDown, FaSortAmountDownAlt, FaDollarSign } from "react-icons/fa";
+import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
 
 const BookGrid = ({ books, enableEdit = false, enableSort = true }) => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,28 +98,54 @@ const BookGrid = ({ books, enableEdit = false, enableSort = true }) => {
             <div className="bookgrid-pagination">
                 <button
                     className="bookgrid-pagination-button"
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                    style={{ fontSize: "18px" }}
+                >
+                    <MdFirstPage />
+                </button>
+                <button
+                    className="bookgrid-pagination-button"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
+                    style={{ fontSize: "18px" }}
                 >
-                    <GrPrevious />
+                    <MdNavigateBefore />
                 </button>
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index + 1}
-                        className={`bookgrid-pagination-button ${currentPage === index + 1 ? "active" : ""}`}
-                        onClick={() => handlePageChange(index + 1)}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    const startPage = Math.max(
+                        Math.min(currentPage - 2, totalPages - 4),
+                        1
+                    );
+                    const page = startPage + i;
+                    return (
+                        <button
+                            key={page}
+                            className={`bookgrid-pagination-button ${currentPage === page ? "active" : ""}`}
+                            onClick={() => handlePageChange(page)}
+                        >
+                            {page}
+                        </button>
+                    );
+                })}
                 <button
                     className="bookgrid-pagination-button"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
+                    style={{ fontSize: "18px" }}
                 >
-                    <GrNext />
+                    <MdNavigateNext />
                 </button>
-            </div></>
+                <button
+                    className="bookgrid-pagination-button"
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                    style={{ fontSize: "18px" }}
+                >
+                    <MdLastPage />
+                </button>
+            </div>
+        </>
     ) : <p className="no-found">No books found!</p>
 };
 

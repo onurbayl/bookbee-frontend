@@ -86,3 +86,30 @@
 .ban-button.ban:hover {
   color: #c82333; /* Darker red on hover */
 }
+
+.bookgrid-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 50px;    
+}
+
+.bookgrid-pagination-button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 500px;
+  cursor: pointer;
+  color: #555;
+}
+
+.bookgrid-pagination-button.active {
+  font-weight: bold;
+  background-color: #CAB295;
+  color: #fff;
+}
+
+.bookgrid-pagination-button:disabled {
+  background-color: #CCC;
+  cursor: not-allowed;
+}

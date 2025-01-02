@@ -4,6 +4,7 @@ import './UsersPage.css';
 import { auth } from '../firebase/firebase';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
+import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,72 +42,72 @@ const UsersPage = () => {
   }, []);
 
   const filteredUsers = users
-  .filter((user) => {
-    const searchTermLower = searchTerm.toLowerCase();
-    return (
-      user.name.toLowerCase().includes(searchTermLower) ||
-      user.uid.toLowerCase().includes(searchTermLower) ||
-      user.email.toLowerCase().includes(searchTermLower)
-    );
-  })
-  .sort((a, b) => a.id - b.id);
+    .filter((user) => {
+      const searchTermLower = searchTerm.toLowerCase();
+      return (
+        user.name.toLowerCase().includes(searchTermLower) ||
+        user.uid.toLowerCase().includes(searchTermLower) ||
+        user.email.toLowerCase().includes(searchTermLower)
+      );
+    })
+    .sort((a, b) => a.id - b.id);
 
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const handleRoleChange = async (uId, newRole) => {
     setUsers((prevUsers) => {
-      
-        const updatedUsers = prevUsers.map((user) =>
-            user.uid === uId ? { ...user, role: newRole } : user
-        );
-  
-        
-        return updatedUsers.sort((a, b) => a.id - b.id); // Sorting by id
+
+      const updatedUsers = prevUsers.map((user) =>
+        user.uid === uId ? { ...user, role: newRole } : user
+      );
+
+
+      return updatedUsers.sort((a, b) => a.id - b.id); // Sorting by id
     });
-    
 
-    try{
-        const crntUser = auth.currentUser;
-        const token = await crntUser.getIdToken();
-        const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/set-role`, 
-            { uid: uId, role: newRole },
+
+    try {
+      const crntUser = auth.currentUser;
+      const token = await crntUser.getIdToken();
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/set-role`,
+        { uid: uId, role: newRole },
         {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        console.log("Role updated for ", response, uId, newRole)
+      console.log("Role updated for ", response, uId, newRole)
 
-        //update user role in db in set-role endpoint
-    } catch(error){
-        console.log("Role set: ", error)
+      //update user role in db in set-role endpoint
+    } catch (error) {
+      console.log("Role set: ", error)
     }
   };
 
   const handleBanToggle = async (userId) => {
     setUsers((prevUsers) => {
-        const updatedUsers = prevUsers.map((user) =>
-            user.id === userId ? { ...user, isDeleted: !user.isDeleted } : user
-        )
+      const updatedUsers = prevUsers.map((user) =>
+        user.id === userId ? { ...user, isDeleted: !user.isDeleted } : user
+      )
 
-        return updatedUsers.sort((a, b) => a.id - b.id);
+      return updatedUsers.sort((a, b) => a.id - b.id);
     });
-  
+
     try {
       const user = users.find((user) => user.id === userId);
-  
+
       if (!user) {
         throw new Error("User not found");
       }
-  
+
       const crntUser = auth.currentUser;
       const token = await crntUser.getIdToken();
-  
+
       const requestUrl = user.isDeleted
         ? `${process.env.REACT_APP_API_BASE_URL}/user/unban/${user.id}`
         : `${process.env.REACT_APP_API_BASE_URL}/user/ban/${user.id}`;
-  
+
       const response = await axios.post(
         requestUrl, {},
         {
@@ -115,11 +116,11 @@ const UsersPage = () => {
           },
         }
       );
-  
+
       console.log(response);
     } catch (error) {
       console.error("Error toggling ban status:", error);
-  
+
       // Revert the UI change in case of an error
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
@@ -128,7 +129,7 @@ const UsersPage = () => {
       );
     }
   };
-  
+
 
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * usersPerPage,
@@ -141,12 +142,12 @@ const UsersPage = () => {
 
   if (loading) {
     return <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-    <ClipLoader color="#36d7b7" loading={loading} size={50} />
+      <ClipLoader color="#36d7b7" loading={loading} size={50} />
     </div>;
   }
 
   if (error) {
-    return <div style={{color: 'red'}}>Error: {error}</div>;
+    return <div style={{ color: 'red' }}>Error: {error}</div>;
   }
 
   return (
@@ -210,16 +211,55 @@ const UsersPage = () => {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            className={currentPage === index + 1 ? 'active' : ''}
-            onClick={() => handlePageChange(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
+      <div className="bookgrid-pagination">
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+          style={{ fontSize: "18px" }}
+        >
+          <MdFirstPage />
+        </button>
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          style={{ fontSize: "18px" }}
+        >
+          <MdNavigateBefore />
+        </button>
+        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+          const startPage = Math.max(
+            Math.min(currentPage - 2, totalPages - 4),
+            1
+          );
+          const page = startPage + i;
+          return (
+            <button
+              key={page}
+              className={`bookgrid-pagination-button ${currentPage === page ? "active" : ""}`}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </button>
+          );
+        })}
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          style={{ fontSize: "18px" }}
+        >
+          <MdNavigateNext />
+        </button>
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          style={{ fontSize: "18px" }}
+        >
+          <MdLastPage />
+        </button>
       </div>
     </div>
   );

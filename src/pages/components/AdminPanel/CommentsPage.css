@@ -55,36 +55,32 @@
   color: #ffffff;
 } */
 
-.pagination {
+.bookgrid-pagination {
   display: flex;
-  justify-content: flex-end; /* Aligns pagination to the right */
+  justify-content: center;
   margin-top: 20px;
-  gap: 10px; /* Space between buttons */
+  margin-bottom: 50px;    
 }
 
-.pagination button {
-  padding: 10px 20px; /* Increase button size */
-  font-size: 16px; /* Increase font size */
-  border: 2px solid #007bff; /* Add a border for better visibility */
-  border-radius: 5px; /* Rounded corners */
-  background-color: #f8f9fa; /* Light background */
-  color: #007bff; /* Button text color */
+.bookgrid-pagination-button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 500px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  color: #555;
 }
 
-.pagination button:hover {
-  background-color: #007bff; /* Change background on hover */
-  color: white; /* Change text color on hover */
+.bookgrid-pagination-button.active {
+  font-weight: bold;
+  background-color: #CAB295;
+  color: #fff;
 }
 
-.pagination button.active {
-  background-color: #007bff; /* Active button background color */
-  color: white; /* Active button text color */
-  font-weight: bold; /* Emphasize active button */
+.bookgrid-pagination-button:disabled {
+  background-color: #CCC;
+  cursor: not-allowed;
 }
-
-
 
 /* .reviews-search-bar {
   margin-bottom: 20px;

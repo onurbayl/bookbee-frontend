@@ -4,8 +4,7 @@ import { FaTrashAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import { auth } from '../firebase/firebase';
-
-
+import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
 
 const ReviewsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,7 +13,6 @@ const ReviewsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const reviewsPerPage = 7;
-  
 
   useEffect(() => {
     // Fetch reviews from backend API
@@ -24,7 +22,7 @@ const ReviewsPage = () => {
       try {
         const crntUser = auth.currentUser;
         const token = await crntUser.getIdToken();
-        
+
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/review`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,41 +45,41 @@ const ReviewsPage = () => {
 
 
   const filteredReviews = reviews
-  .filter((review) => {
-    const searchTermLower = searchTerm.toLowerCase();
-    return (
-      review.user.name.toLowerCase().includes(searchTermLower) ||
-      review.user.email.toLowerCase().includes(searchTermLower) ||
-      review.content.toLowerCase().includes(searchTermLower) ||
-      review.book.name.toLowerCase().includes(searchTermLower) 
-    );
-  })
-  .sort((a, b) => a.id - b.id);
+    .filter((review) => {
+      const searchTermLower = searchTerm.toLowerCase();
+      return (
+        review.user.name.toLowerCase().includes(searchTermLower) ||
+        review.user.email.toLowerCase().includes(searchTermLower) ||
+        review.content.toLowerCase().includes(searchTermLower) ||
+        review.book.name.toLowerCase().includes(searchTermLower)
+      );
+    })
+    .sort((a, b) => a.id - b.id);
 
-  
+
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
 
   const handleDeleteReview = async (reviewId, bookId, userId) => {
     setReviews((prevReviews) => {
-        const updatedReviews = prevReviews.filter((review) => review.id !== reviewId)
-        return updatedReviews.sort((a, b) => a.id - b.id)
+      const updatedReviews = prevReviews.filter((review) => review.id !== reviewId)
+      return updatedReviews.sort((a, b) => a.id - b.id)
     });
 
     try {
-        const crntUser = auth.currentUser;
-        const token = await crntUser.getIdToken();
+      const crntUser = auth.currentUser;
+      const token = await crntUser.getIdToken();
 
-        const requestUrl = `${process.env.REACT_APP_API_BASE_URL}/review/delete-review/${bookId}/${userId}`;
+      const requestUrl = `${process.env.REACT_APP_API_BASE_URL}/review/delete-review/${bookId}/${userId}`;
 
-        const response = await axios.delete(requestUrl, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+      const response = await axios.delete(requestUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
 
-        console.log(response)
+      console.log(response)
     } catch (error) {
-        console.error("Error deleting review:", error);
+      console.error("Error deleting review:", error);
     }
   };
 
@@ -97,12 +95,12 @@ const ReviewsPage = () => {
 
   if (loading) {
     return <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-    <ClipLoader color="#36d7b7" loading={loading} size={50} />
+      <ClipLoader color="#36d7b7" loading={loading} size={50} />
     </div>;
   }
 
   if (error) {
-    return <div style={{color: 'red'}}>Error: {error}</div>;
+    return <div style={{ color: 'red' }}>Error: {error}</div>;
   }
 
   return (
@@ -136,25 +134,64 @@ const ReviewsPage = () => {
               <td>{review.content}</td>
               <td>{review.dateCreated}</td>
               <td>
-              <button className="delete-btn" onClick={() => handleDeleteReview(review.id, review.book.id, review.user.id)}>
+                <button className="delete-btn" onClick={() => handleDeleteReview(review.id, review.book.id, review.user.id)}>
                   <FaTrashAlt size={20} /> {/* Use FaTrashAlt from react-icons */}
                 </button>
-                
+
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            className={currentPage === index + 1 ? 'active' : ''}
-            onClick={() => handlePageChange(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
+      <div className="bookgrid-pagination">
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+          style={{ fontSize: "18px" }}
+        >
+          <MdFirstPage />
+        </button>
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          style={{ fontSize: "18px" }}
+        >
+          <MdNavigateBefore />
+        </button>
+        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+          const startPage = Math.max(
+            Math.min(currentPage - 2, totalPages - 4),
+            1
+          );
+          const page = startPage + i;
+          return (
+            <button
+              key={page}
+              className={`bookgrid-pagination-button ${currentPage === page ? "active" : ""}`}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </button>
+          );
+        })}
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          style={{ fontSize: "18px" }}
+        >
+          <MdNavigateNext />
+        </button>
+        <button
+          className="bookgrid-pagination-button"
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          style={{ fontSize: "18px" }}
+        >
+          <MdLastPage />
+        </button>
       </div>
     </div>
   );
