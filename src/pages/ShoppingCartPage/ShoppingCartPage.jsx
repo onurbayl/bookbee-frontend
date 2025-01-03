@@ -129,7 +129,7 @@ const ShoppingCartPage = () => {
                 autoClose: 2000,
             });
             setShowModal(false);
-            navigate("/user");
+            navigate("/user/order-history");
         } catch (error) {
             console.error("Error completing purchase:", error);
             toast.error(error.response.data.message, {
