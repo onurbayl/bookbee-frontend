@@ -5,6 +5,9 @@ import { auth } from '../firebase/firebase';
 import axiost from "../../../axiosConfig.js";
 import { ClipLoader } from 'react-spinners';
 import { MdFirstPage, MdNavigateBefore, MdNavigateNext, MdLastPage } from "react-icons/md";
+import { Button } from 'antd';
+import CouponModal from './CouponModal.jsx';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,7 +16,17 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const usersPerPage = 6;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const usersPerPage = 5;
 
   useEffect(() => {
     // Fetch users from backend API
@@ -159,6 +172,17 @@ const UsersPage = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
+      <div style={{padding: '10px', marginBottom: '20px'}}>
+      <Button type="primary" onClick={showModal} icon={<PlusCircleOutlined />} style={{backgroundColor: 'orange', borderColor: 'orange', fontSize: '18px'}}>
+        Create Coupon for User
+      </Button>
+
+      <CouponModal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        users={users}
+      />
+    </div>
       <table className="users-table">
         <thead>
           <tr>
